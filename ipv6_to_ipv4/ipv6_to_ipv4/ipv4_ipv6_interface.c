@@ -374,7 +374,48 @@ int main()
 
 #endif
 
-
+/* 解析域名
+ ----SHOW IP FOR ylog.hiido.com
+ IP addresses for ylog.hiido.com:
+ 
+ IPv6: 2001:2:0:1baa::3d85:34a2
+ IPv6: 2001:2:0:1baa::3db3:e702
+ IPv6: 2001:2:0:1baa::9dff:e88f
+ IPv6: 2001:2:0:1baa::24f8:130d
+ IPv6: 2001:2:0:1baa::24f8:144a
+ IPv6: 2001:2:0:1baa::6e35:a40a
+ IPv6: 2001:2:0:1baa::705b:13b9
+ IPv6: 2001:2:0:1baa::3d85:34a3
+ IPv4: 112.91.19.185
+ IPv4: 61.133.52.162
+ IPv4: 61.133.52.163
+ IPv4: 61.179.231.2
+ IPv4: 157.255.232.143
+ IPv4: 36.248.19.13
+ IPv4: 36.248.20.74
+ IPv4: 110.53.164.10
+ */
+/*加了map和config那俩flags之后
+ 
+ 2018-07-28 18:21:59.595 ipv6_to_ipv4_ios[363:231519] get_local_valid_net output
+ 2018-07-28 18:21:59.595 ipv6_to_ipv4_ios[363:231519] lo0,::1,AF_INET6(30)
+ lo0,127.0.0.1,AF_INET(2)
+ en0,2001:2::aab1:837:672:4104:bd47,AF_INET6(30)
+ en0,2001:2::aab1:c904:df2b:1bde:ee22,AF_INET6(30)
+ ----SHOW IP FOR ylog.hiido.com
+ IP addresses for ylog.hiido.com:
+ 没有返回v4地址了么？？
+ IPv6: 2001:2:0:1baa::9dff:e88f
+ IPv6: 2001:2:0:1baa::3d85:34a2
+ IPv6: 2001:2:0:1baa::3db3:e702
+ IPv6: 2001:2:0:1baa::6e35:a40a
+ IPv6: 2001:2:0:1baa::3d85:34a3
+ IPv6: 2001:2:0:1baa::705b:13b9
+ IPv6: 2001:2:0:1baa::24f8:130d
+ IPv6: 2001:2:0:1baa::24f8:144a
+ ====================error in __connection_block_invoke_2: Connection interrupted
+ 
+ */
 void showIp(char *hostname){
     printf("----SHOW IP FOR %s\n",hostname);
     struct addrinfo hints, *res, *p;
@@ -384,6 +425,13 @@ void showIp(char *hostname){
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC; // AF_INET or AF_INET6 to force version
     hints.ai_socktype = SOCK_STREAM;
+    /*
+     AI_V4MAPPED为了在非DNS64网络下，返回v4-mapped ipv6 address，不会返回EAI_NONAME失败，导致判断不准确。
+     AI_ADDRCONFIG返回的地址是本地能够使用的（具体可以看文档下面的介绍）。
+     如果有NAT64前缀的v6地址返回，证明当前网络是IPv6-only NAT64网络。
+     */
+    hints.ai_flags = AI_ADDRCONFIG|AI_V4MAPPED;
+
     if ((status = getaddrinfo(hostname, NULL, &hints, &res)) != 0) {
         fprintf(stderr,"getaddrinfo: %s\n", gai_strerror(status));
         return ;
