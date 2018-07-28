@@ -1,0 +1,41 @@
+-) server, client support usage stat, like received packets, bytes, current connections
+
+-) the capability of sending raw packet
+
+-) implement unix domain socket only under Unix
+
+-) socket can accept or connect on specific interface according to its name
+
+-) client connect to server via specific port, it's an advance tool
+
+-) client use specific port and address, if host have multiple NICs, but want use specific NIC
+
+-) timeout when user connect in but no send any data
+
+-) allow udp connect to a fixed address
+
+-) if udp is connected to a address, then send and recv only allow this address's packets
+
+-) report error if udp already connect to a fixed addr but still send to another address
+
+-) allow multicast and broadcast on socket
+
+-) deadline is not same as timeout, add deadline support for socket
+
+-) support set max connections limit in tcp, udp server socket
+
+-) add sendfile, TransmitFile, use method name: transmit
+
+-) async dns resolve
+
+-) detect file changes using reactor
+
+-) reactor accept base class ref instead of fd
+
+-) librector only provide io, timer, signal and so on, sockets move to another library
+
+-) Windows support AF_UNIX https://blogs.msdn.microsoft.com/commandline/2017/12/19/af_unix-comes-to-windows/
+
+-) support socketpair
+
+-）support signal, file
