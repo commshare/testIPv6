@@ -416,6 +416,77 @@ int main()
  ====================error in __connection_block_invoke_2: Connection interrupted
  
  */
+/*
+ ====================----SHOW IP FOR 183.146.210.37
+ IP addresses for 183.146.210.37:
+ 
+ IPv6: 2001:2:0:1baa::b792:d225
+ ====================error in __connection_block_invoke_2: Connection interrupted
+ 
+ ====================----SHOW IP FOR 58.215.52.186
+ IP addresses for 58.215.52.186:
+ 
+ IPv6: 2001:2:0:1baa::3ad7:34ba
+ */
+/*
+ 去掉AI_DEFAULT     //hints.ai_flags = AI_ADDRCONFIG|AI_V4MAPPED;
+ 就有v4了
+ 
+ ----SHOW IP FOR ylog.hiido.com
+ IP addresses for ylog.hiido.com:
+ 
+ IPv6: 2001:2:0:1baa::705b:13b9
+ IPv6: 2001:2:0:1baa::24f8:144a
+ IPv6: 2001:2:0:1baa::6e35:a40a
+ IPv6: 2001:2:0:1baa::3d85:34a3
+ IPv6: 2001:2:0:1baa::3db3:e702
+ IPv6: 2001:2:0:1baa::9dff:e88f
+ IPv6: 2001:2:0:1baa::24f8:130d
+ IPv6: 2001:2:0:1baa::3d85:34a2
+ IPv4: 36.248.19.13
+ IPv4: 112.91.19.185
+ IPv4: 61.133.52.162
+ IPv4: 36.248.20.74
+ IPv4: 110.53.164.10
+ IPv4: 61.133.52.163
+ IPv4: 61.179.231.2
+ IPv4: 157.255.232.143
+ ====================----SHOW IP FOR 183.146.210.37
+ IP addresses for 183.146.210.37:
+ 
+ IPv6: 2001:2:0:1baa::b792:d225
+ IPv4: 183.146.210.37
+ ====================----SHOW IP FOR 58.215.52.186
+ IP addresses for 58.215.52.186:
+ 
+ IPv6: 2001:2:0:1baa::3ad7:34ba
+ IPv4: 58.215.52.186
+ ====================error in __connection_block_invoke_2: Connection interrupted
+ 
+ 换到普通的网络：
+ ====================----SHOW IP FOR 183.146.210.37
+ IP addresses for 183.146.210.37:
+ 
+ IPv4: 183.146.210.37
+ ====================----SHOW IP FOR 58.215.52.186
+ IP addresses for 58.215.52.186:
+ 
+ IPv4: 58.215.52.186
+ ====================
+ 
+切到专用网络；
+ 
+ ====================----SHOW IP FOR 183.146.210.37
+ IP addresses for 183.146.210.37:
+ 
+ IPv6: 2001:2:0:1baa::b792:d225
+ ====================----SHOW IP FOR 58.215.52.186
+ IP addresses for 58.215.52.186:
+ 
+ IPv6: 2001:2:0:1baa::3ad7:34ba
+ 
+ */
+
 void showIp(char *hostname){
     printf("----SHOW IP FOR %s\n",hostname);
     struct addrinfo hints, *res, *p;
@@ -430,8 +501,8 @@ void showIp(char *hostname){
      AI_ADDRCONFIG返回的地址是本地能够使用的（具体可以看文档下面的介绍）。
      如果有NAT64前缀的v6地址返回，证明当前网络是IPv6-only NAT64网络。
      */
-    hints.ai_flags = AI_ADDRCONFIG|AI_V4MAPPED;
-
+    //hints.ai_flags = AI_ADDRCONFIG|AI_V4MAPPED;
+    hints.ai_flags = AI_DEFAULT ;
     if ((status = getaddrinfo(hostname, NULL, &hints, &res)) != 0) {
         fprintf(stderr,"getaddrinfo: %s\n", gai_strerror(status));
         return ;

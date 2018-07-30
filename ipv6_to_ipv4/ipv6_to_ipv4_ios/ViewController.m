@@ -9,7 +9,8 @@
 #import "ViewController.h"
 #include "ipv4_ipv6_interface.h"
 #define HIIDO_SERVER_DOMAIN_NAME "ylog.hiido.com"
-
+#define TT_IP_1 "183.146.210.37"
+#define TT_IP_2 "58.215.52.186"
 @interface ViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *_version_lable;
 @property (weak, nonatomic) IBOutlet UITextView *localNetTextView;
@@ -36,6 +37,8 @@
     // 获取并显示Local Network信息
     [self refreshLocalNetwork];
     showIp(HIIDO_SERVER_DOMAIN_NAME);
+    showIp(TT_IP_1);
+    showIp(TT_IP_2);
 }
 
 - (void)refreshLocalNetwork {
