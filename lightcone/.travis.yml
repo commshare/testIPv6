@@ -1,0 +1,30 @@
+branches:
+  only:
+    - master
+matrix:
+  include:
+    # Linux
+    - language: cpp
+      os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-6
+      before_install:
+        - eval "CC=gcc-6 && CXX=g++-6"
+        - eval "PATH=${PATH}:$HOME/.local/bin"
+        - pip install --user cpplint
+      script:
+        - (cd lightcone && ./configure && make lint && make && make test)
+
+    # OSX
+    - language: cpp
+      os: osx
+      osx_image: xcode9.4
+      script:
+        - (cd lightcone && ./configure && make && make test)
+
+notifications:
+  email: false

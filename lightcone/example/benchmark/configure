@@ -1,0 +1,294 @@
+#!/bin/sh
+
+
+##################################
+# Configurations
+##################################
+OUTFILE="Makefile"
+PROJECT=example
+
+
+##################################
+# Detect Arch
+##################################
+case $(uname -a) in
+  *raspberrypi* )
+      ARCH="arm";
+      ;;
+  *arm* )
+      ARCH="arm";
+      ;;
+  *x86_64* )
+      ARCH="x86_64";
+      ;;
+  *i386* )
+      ARCH="x86";
+      ;;
+  *i586* )
+      ARCH="x86";
+      ;;
+  *i686* )
+      ARCH="x86";
+      ;;
+  * )
+      ARCH="x86";
+      echo Warning: Unable to detect host architecure, default to ${ARCH}.
+      ;;
+esac
+
+
+##################################
+# Detect Host
+##################################
+case $(uname -a) in
+  *raspberrypi* )
+      HOST=linux
+      ;;
+  *armv7* )
+      HOST=android
+      ;;
+  *BSD* )
+      HOST=bsd
+      ;;
+  *Linux* )
+      HOST=linux
+      ;;
+  *Darwin\ Kernel* )
+      HOST=macosx
+      ;;
+  *SunOS* )
+      HOST=solaris
+      ;;
+  *)
+      echo Error: Unable to detect host platform.
+      exit
+      ;;
+esac
+
+
+PLATFORM=${HOST}
+TARGET=${PLATFORM}-${ARCH}
+
+
+##################################
+# Target specific
+##################################
+case $PLATFORM in
+  bsd)
+      LIBTOOL="ar"
+       CFLAGS="-O2 -pipe -DPLATFORM_BSD -D_THREAD_SAFE -MMD -MP -Werror"
+     CXXFLAGS="-std=c++14 -O2 -pipe -DPLATFORM_BSD -D_THREAD_SAFE -MMD -MP -Werror"
+      LDFLAGS=""
+       LDLIBS="-lpthread -lm -dl -lcrypt -lstdc++ -lz"
+     LIBFLAGS="-rcs"
+        CWARN="-Wall -Wextra -Wattributes -Wcast-align -Wconversion -Wdeclaration-after-statement             \\
+         -Wdiv-by-zero -Wfloat-equal -Wimplicit-int -Winit-self -Wint-to-pointer-cast -Wmissing-braces        \\
+         -Wmissing-field-initializers -Woverflow -Wpointer-arith -Wpointer-sign -Wpointer-to-int-cast         \\
+         -Wredundant-decls -Wreturn-type -Wshadow -Wsign-compare -Wuninitialized -Wwrite-strings              \\
+         -Wno-unused-parameter -Wno-multichar -Wno-strict-aliasing"
+      CXXWARN="-Wall -Wextra -Wattributes -Wcast-align -Wconversion -Wdiv-by-zero                             \\
+         -Wfloat-equal -Winit-self -Wmissing-braces -Wmissing-field-initializers -Woverflow -Wpointer-arith   \\
+         -Wredundant-decls -Wreturn-type -Wshadow -Wsign-compare -Wsign-promo -Wuninitialized -Wwrite-strings \\
+         -Wno-unused-parameter -Wno-multichar -Wno-strict-aliasing"
+  ;;
+  linux)
+      LIBTOOL="ar"
+       CFLAGS="-O2 -pipe -DPLATFORM_LINUX -D_THREAD_SAFE -MMD -MP -Werror"
+     CXXFLAGS="-std=c++14 -O2 -pipe -DPLATFORM_LINUX -D_THREAD_SAFE -MMD -MP -Werror"
+      LDFLAGS=
+       LDLIBS="-lpthread -ldl -lstdc++"
+     LIBFLAGS="-rcs"
+        CWARN="-Wall -Wextra -Wattributes -Wbuiltin-macro-redefined -Wcast-align -Wconversion -Wdeclaration-after-statement    \\
+         -Wdiv-by-zero -Wfloat-equal -Wimplicit-int -Winit-self -Wint-to-pointer-cast  \\
+         -Wlogical-op -Wmissing-braces -Wmissing-field-initializers -Wmissing-parameter-type          \\
+         -Woverflow -Wpointer-arith -Wpointer-sign -Wpointer-to-int-cast -Wredundant-decls -Wreturn-type -Wshadow        \\
+         -Wsign-compare -Wtype-limits -Wuninitialized -Wwrite-strings \\
+         -Wno-unused-parameter -Wno-multichar -Wno-strict-aliasing"
+      CXXWARN="-Wall -Wextra -Wattributes -Wbuiltin-macro-redefined -Wc++0x-compat -Wcast-align -Wconversion -Wdiv-by-zero     \\
+         -Wenum-compare -Wfloat-equal -Winit-self -Wlogical-op -Wmissing-braces \\
+         -Wmissing-field-initializers -Woverflow -Wpointer-arith -Wredundant-decls -Wreturn-type -Wshadow -Wsign-compare \\
+         -Wsign-promo -Wtype-limits -Wuninitialized -Wwrite-strings \\
+         -Wno-unused-parameter -Wno-multichar -Wno-strict-aliasing"
+  ;;
+  macosx )
+      LIBTOOL="libtool"
+       CFLAGS="-O2 -arch i386 -arch x86_64 -DPLATFORM_MAC -D_THREAD_SAFE -Werror"
+     CXXFLAGS="-std=c++14 -O2 -arch i386 -arch x86_64 -no-cpp-precomp -DPLATFORM_MAC -D_THREAD_SAFE -Werror"
+      LDFLAGS=""
+       LDLIBS="-lpthread -lm -ldl -lstdc++ -lz"
+     LIBFLAGS="-static -o"
+        CWARN="-Wall -Wextra -Wattributes -Wcast-align -Wconversion -Wdeclaration-after-statement \\
+         -Wdiv-by-zero -Wfloat-equal -Wimplicit-int -Winit-self -Wint-to-pointer-cast -Wmissing-braces       \\
+         -Wmissing-field-initializers -Woverflow -Wpointer-arith -Wpointer-sign -Wpointer-to-int-cast        \\
+         -Wredundant-decls -Wreturn-type -Wshadow -Wsign-compare -Wuninitialized -Wwrite-strings \\
+         -Wno-unused-parameter -Wno-multichar -Wno-strict-aliasing"
+      CXXWARN="-Wall -Wextra -Wattributes -Wcast-align -Wconversion -Wdiv-by-zero   \\
+         -Wfloat-equal -Winit-self -Wmissing-braces -Wmissing-field-initializers -Woverflow -Wpointer-arith   \\
+         -Wredundant-decls -Wreturn-type -Wshadow -Wsign-compare -Wsign-promo -Wuninitialized -Wwrite-strings \\
+         -Wno-unused-parameter -Wno-multichar -Wno-strict-aliasing"
+  ;;
+  solaris )
+      LIBTOOL="ar"
+       CFLAGS="-O2 -DPLATFORM_SOLARIS -D_THREAD_SAFE -DFD_SETSIZE=16384 -Werror"
+     CXXFLAGS="-std=c++14 -O2 -DPLATFORM_SOLARIS -D_THREAD_SAFE -DFD_SETSIZE=16384 -Werror"
+      LDFLAGS=""
+       LDLIBS="-lpthread -lm -dl -lcrypt -lstdc++ -lz -lsocket -lnsl"
+     LIBFLAGS="-rcs"
+        CWARN="-Wall -Wextra -Wcast-align -Wconversion -Wdeclaration-after-statement    \\
+         -Wdiv-by-zero -Wfloat-equal -Wimplicit-int -Winit-self -Wint-to-pointer-cast  \\
+         -Wmissing-braces         \\
+         -Wpointer-arith -Wpointer-to-int-cast -Wredundant-decls -Wreturn-type -Wshadow        \\
+         -Wsign-compare -Wuninitialized -Wwrite-strings \\
+         -Wno-unused-parameter -Wno-multichar -Wno-strict-aliasing"
+      CXXWARN="-Wall -Wextra -Wcast-align -Wconversion     \\
+         -Wfloat-equal -Winit-self -Wmissing-braces \\
+         -Wpointer-arith -Wredundant-decls -Wreturn-type -Wshadow -Wsign-compare \\
+         -Wsign-promo -Wuninitialized -Wwrite-strings \\
+         -Wno-unused-parameter -Wno-multichar -Wno-strict-aliasing"
+  ;;
+  android )
+      LIBTOOL=ar
+       CFLAGS="-O2 -DPLATFORM_ANDROID -D_THREAD_SAFE -Wno-psabi -Werror"
+     CXXFLAGS="-std=c++14 -O2 -DPLATFORM_ANDROID -D_THREAD_SAFE -Wno-psabi -Werror"
+      LDFLAGS=""
+       LDLIBS="-pthread -ldl -lstdc++"
+     LIBFLAGS="-rcs"
+        CWARN="-Wall -Wextra -Wattributes -Wbuiltin-macro-redefined -Wdeclaration-after-statement    \\
+         -Wdiv-by-zero -Wfloat-equal -Wimplicit-int -Winit-self -Wint-to-pointer-cast  \\
+         -Wlogical-op -Wmissing-braces -Wmissing-field-initializers -Wmissing-parameter-type          \\
+         -Woverflow -Wpointer-arith -Wpointer-sign -Wpointer-to-int-cast -Wreturn-type        \\
+         -Wsign-compare -Wtype-limits -Wuninitialized -Wwrite-strings \\
+         -Wno-unused-parameter -Wno-multichar -Wno-strict-aliasing"
+      CXXWARN="-Wall -Wextra -Wattributes -Wbuiltin-macro-redefined -Wc++0x-compat -Wdiv-by-zero     \\
+         -Wenum-compare -Wfloat-equal -Winit-self -Wlogical-op -Wmissing-braces \\
+         -Wmissing-field-initializers -Woverflow -Wpointer-arith -Wreturn-type -Wsign-compare \\
+         -Wsign-promo -Wtype-limits -Wuninitialized -Wwrite-strings \\
+         -Wno-unused-parameter -Wno-multichar -Wno-strict-aliasing"
+  ;;
+esac
+
+
+cat << EOM
+##################################################
+[ ] Host Platform...........$HOST
+[ ] Target .................$TARGET
+[ ] C Compile Option........$CFLAGS
+[ ] C++ Compile Option......$CXXFLAGS
+[ ] Linker Option...........$LDFLAGS
+[ ] Link Libraries..........$LDLIBS
+[ ] Libtool Option..........$LIBFLAGS
+[ ] Output..................bin/$TARGET/$PROJECT
+EOM
+
+cat << EOM   >$OUTFILE
+# Auto Generated Configuration
+# Configuration: $0 $@
+
+PROJECT=$PROJECT
+PROJECT_VER:=\`git rev-parse --short HEAD\`
+
+
+# TOOLCHAIN
+########################
+LIBTOOL =$LIBTOOL
+CFLAGS  =$CFLAGS
+CXXFLAGS=$CXXFLAGS
+LDFLAGS =$LDFLAGS
+LDLIBS  =$LDLIBS
+LIBFLAGS=$LIBFLAGS
+CWARN   =$CWARN
+CXXWARN =$CXXWARN
+CPPLINTFLAGS=--quiet --filter=-legal/copyright,-build/include_subdir,-build/c++11,-readability/todo,-build/header_guard --linelength=200
+
+
+.PHONY: all MakeApp test lint lint-app lint-test doc clean
+all: MakeApp
+
+
+LIGHTCONE_LIB=-L../../lightcone/lib/$TARGET -llightcone
+
+# Application
+########################
+APP_PATH_SRC=src/
+APP_PATH_HEADER=src/
+APP_PATH_BUILD=.build/
+APP_PATH_TEST=test/
+APP_PATH_DIST=dist/
+APP_PATH_BIN=bin/$TARGET/
+
+APP_INCLUDE=-I../../ -I\$(APP_PATH_HEADER)
+
+APP_FILE_MAIN:=\$(APP_PATH_SRC)main.cpp
+APP_FILE_H  :=\$(sort \$(wildcard \$(APP_PATH_HEADER)*.h))
+APP_FILE_C  :=\$(sort \$(filter-out \$(APP_FILE_MAIN), \$(wildcard \$(APP_PATH_SRC)*.c)))
+APP_FILE_CPP:=\$(sort \$(filter-out \$(APP_FILE_MAIN), \$(wildcard \$(APP_PATH_SRC)*.cpp)))
+APP_FILE_O  :=\$(patsubst \$(APP_PATH_SRC)%.c,\$(APP_PATH_BUILD)%_c.o,\$(APP_FILE_C)) \\
+              \$(patsubst \$(APP_PATH_SRC)%.cpp,\$(APP_PATH_BUILD)%.o,\$(APP_FILE_CPP))
+APP_FILE_MAINO:=\$(patsubst \$(APP_PATH_SRC)%.cpp,\$(APP_PATH_BUILD)%.o,\$(APP_FILE_MAIN))
+APP_FILE_DEP:=\$(patsubst %.o,%.d,\$(APP_FILE_O))
+APP_FILE_OUT:=\$(APP_PATH_BIN)\$(PROJECT)
+
+-include \$(APP_FILE_DEP)
+
+# Build Commands
+########################
+MakePath:
+	@mkdir -p \$(APP_PATH_BUILD) \$(APP_PATH_BIN)
+
+MakeApp: MakePath \$(APP_FILE_OUT) \$(APP_FILE_MAINO) Makefile
+\$(APP_FILE_OUT): Makefile \$(APP_FILE_O) \$(APP_FILE_MAINO)
+	@echo "[LINK] \$@"
+	@\$(CXX) \$(LDFLAGS) -o \$@ \$(APP_FILE_MAINO) \$(APP_FILE_O) \$(LIGHTCONE_LIB) \$(LDLIBS)
+	@echo ;
+
+\$(APP_PATH_BUILD)%_c.o: \$(APP_PATH_SRC)%.c Makefile
+	@echo "[CC  ] \$<"
+	@\$(CC) \$(CFLAGS) \$(CWARN) \$(APP_INCLUDE) -c \$< -o \$@
+
+\$(APP_PATH_BUILD)%.o: \$(APP_PATH_SRC)%.cpp Makefile
+	@echo "[CXX ] \$<"
+	@\$(CXX) \$(CXXFLAGS) \$(CXXWARN) \$(APP_INCLUDE) -c \$< -o \$@
+
+lint-app:
+	@echo "[LINT] example"
+	@cpplint \$(CPPLINTFLAGS) \$(APP_FILE_CPP) \$(APP_FILE_H)
+
+# Unit Test
+#################################################
+TEST_PATH_SRC=test/
+TEST_PATH_BUILD=.build/
+TEST_FILE_CPP := \$(sort \$(wildcard \$(TEST_PATH_SRC)*.cpp))
+TEST_FILE_PROG:= \$(patsubst \$(TEST_PATH_SRC)%.cpp,\$(TEST_PATH_BUILD)%_t.test,\$(TEST_FILE_CPP))
+TEST_FILE_DEPT:= \$(patsubst %.test,%.d,\$(TEST_FILE_PROG))
+
+TEST_INCLUDE=-I../../ -I\$(APP_PATH_HEADER)
+
+test: MakePath \$(TEST_FILE_PROG)
+	@rc=0; count=0; \\
+	for file in \$(TEST_FILE_PROG); do \\
+	    echo "[TEST] \$\$file"; \\
+	    if ! ./\$\$file; then rc=\`expr \$\$rc + 1\`; fi; \\
+	    count=\`expr \$\$count + 1\`; \\
+	done; \\
+	echo "Tests executed: \$\$count  Tests failed: \$\$rc"; \\
+	if [ "\$\$rc" != "0" ]; then false; fi
+
+\$(TEST_PATH_BUILD)%_t.test: \$(TEST_PATH_SRC)%.cpp Makefile \$(APP_FILE_OUT)
+	@echo "[CXX ] \$<"
+	@\$(CXX) \$(CXXFLAGS) \$(LDFLAGS) \$(TEST_INCLUDE) \$< \$(APP_FILE_OUT) \$(LDLIBS) -o \$@
+
+lint-test:
+	@if [ "\$(TEST_FILE_CPP)" != "" ]; then @echo "[LINT] test"; @cpplint \$(CPPLINTFLAGS) \$(TEST_FILE_CPP); fi
+
+# Misc
+#################################################
+clean:
+	@-rm \$(APP_FILE_O) \$(APP_FILE_DEP) \$(TEST_FILE_PROG) \$(TEST_FILE_DEPT)
+
+lint: lint-app lint-test
+
+doc:
+	@doxygen
+
+EOM
+
