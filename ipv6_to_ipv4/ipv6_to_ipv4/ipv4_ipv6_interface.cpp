@@ -529,7 +529,46 @@ void showIp(char *hostname){
     freeaddrinfo(res); // free the linked list
     printf("====================");
 }
+//get sockaddr  ipv4, v6
+void * get_in_addr(struct sockaddr *sa)
+{
+    if(sa->sa_family == AF_INET)
+    {
+        return &(((struct sockaddr_in *)sa)->sin_addr);
+    }
+    return &(((struct sockaddr_in6 *)sa)->sin6_addr);
+}
 
+void UdpBind(int sd, void * serveraddr, int len){
+    if (bind(sd,
+             (struct sockaddr *)&serveraddr,
+//             sizeof(serveraddr)) < 0
+             len ) <0 )
+    {
+        printf("bind() failed \n");
+    }
+}
+int UdpSend(int sock,char *msg,int size, void *svraddr,socklen_t svraddr_len)
+{
+    int n = (int)::sendto(sock,msg,strlen(msg)+1,0,(struct sockaddr *)&svraddr,size);
+    if(n == -1)
+    {
+       printf("send to server : %d %s\n",size,strerror(errno));
+    }
+    printf("send to server : %d \n",size);
+    int nret = sendto(sock, msg,size,0,(struct sockaddr*)svraddr, svraddr_len);
+    if(nret== -1  )
+    {
+        printf("send to fail \n");
+        return false;
+    }
+    printf("conncet to ok sock %d \n",sock);
+
+    return nret;
+}
+void UdpClose(int sock){
+    ::close(sock);
+}
 bool SConnect(const char* domain, unsigned short port)
 {
     //连接ip
@@ -548,17 +587,21 @@ bool SConnect(const char* domain, unsigned short port)
     error = getaddrinfo(ip, NULL, NULL, &result);
     const struct sockaddr *sa = result->ai_addr;
     socklen_t maxlen = 128;
-    int m_sock;
-    switch(sa->sa_family) {
+    /*创建socket*/
+    int m_sock = -1 ;//初始化为-1？
+    switch(sa->sa_family)
+    {
         case AF_INET://ipv4
             printf("create ipv4 socket  %s\n",domain);
-            if ((m_sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-                perror("socket create failed");
+            if ((m_sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+            {
+                perror("socket create v4 failed");
                 ret = false;
                 break;
             }
             if(inet_ntop(AF_INET, &(((struct sockaddr_in *)sa)->sin_addr),
-                         ip, maxlen) == NULL){
+                         ip, maxlen) == NULL)
+            {
                 perror(ip);
                 ret = false;
                 break;
@@ -571,8 +614,9 @@ bool SConnect(const char* domain, unsigned short port)
             break;
         case AF_INET6://ipv6
             printf("create ipv6 socket %s \n",domain);
-            if ((m_sock = socket(AF_INET6, SOCK_STREAM, 0)) < 0) {
-                perror("socket create failed");
+            if ((m_sock = socket(AF_INET6, SOCK_STREAM, 0)) < 0)
+            {
+                perror("socket create v6 failed");
                 ret = false;
                 break;
             }
@@ -584,7 +628,8 @@ bool SConnect(const char* domain, unsigned short port)
             bzero(&svraddr_6, sizeof(svraddr_6));
             svraddr_6.sin6_family = AF_INET6;
             svraddr_6.sin6_port = htons(port);
-            if ( inet_pton(AF_INET6, ip, &svraddr_6.sin6_addr) < 0 ) {
+            if ( inet_pton(AF_INET6, ip, &svraddr_6.sin6_addr) < 0 )
+            {
                 perror(ip);
                 ret = false;
                 break;
@@ -594,21 +639,65 @@ bool SConnect(const char* domain, unsigned short port)
             break;
             
         default:
+        {
             printf("Unknown AF\ns");
             ret = false;
+        }
     }
     freeaddrinfo(result);
     if(!ret)
     {
-        fprintf(stderr , "Cannot Connect the server!n");
+        fprintf(stderr , "Cannot Connect the server!\n");
         return false;
     }
-    int nret = connect(m_sock, (struct sockaddr*)svraddr, svraddr_len);
-    if(nret== -1  )
-    {
-        printf("conncet to %s fail",domain);
-        return false;
-    }
-    
+    UdpBind(m_sock, svraddr, sizeof(svraddr));
+    char * msg = "thechinaOne";
+    UdpSend(m_sock,msg,sizeof(msg),svraddr, sizeof(svraddr));
     return true;
+}
+
+
+
+ int getaddrinfo_compat(
+    const char * hostname,
+    const char * servname,
+    const struct addrinfo * hints,
+    struct addrinfo ** res
+)
+{
+    int    err;
+    int    numericPort;
+
+    // If we're given a service name and it's a numeric string, set `numericPort` to that,
+    // otherwise it ends up as 0.
+
+    numericPort = servname != NULL ? atoi(servname) : 0;
+
+    // Call `getaddrinfo` with our input parameters.
+
+    err = getaddrinfo(hostname, servname, hints, res);
+
+    // Post-process the results of `getaddrinfo` to work around   <rdar://problem/26365575>.
+
+    if ( (err == 0) && (numericPort != 0) ) {
+        for (const struct addrinfo * addr = *res; addr != NULL; addr = addr->ai_next) {
+            in_port_t *    portPtr;
+
+            switch (addr->ai_family) {
+                case AF_INET: {
+                    portPtr = &((struct sockaddr_in *) addr->ai_addr)->sin_port;
+                } break;
+                case AF_INET6: {
+                    portPtr = &((struct sockaddr_in6 *) addr->ai_addr)->sin6_port;
+                } break;
+                default: {
+                    portPtr = NULL;
+                } break;
+            }
+            if ( (portPtr != NULL) && (*portPtr == 0) ) {
+                *portPtr = htons(numericPort);
+            }
+        }
+    }
+    return err;
 }

@@ -11,6 +11,7 @@
 #define HIIDO_SERVER_DOMAIN_NAME "ylog.hiido.com"
 #define TT_IP_1 "183.146.210.37"
 #define TT_IP_2 "58.215.52.186"
+#define MY_UBUNTU "172.25.33.36"
 @interface ViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *_version_lable;
 @property (weak, nonatomic) IBOutlet UITextView *localNetTextView;
