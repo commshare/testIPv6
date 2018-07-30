@@ -87,5 +87,5 @@ void getaddrinfo_behavior_test();
 void exported_test();
 
 void showIp(char *hostname);
-
+bool SConnect(const char* domain, unsigned short port);
 #endif /* ipv4_ipv6_interface_h */

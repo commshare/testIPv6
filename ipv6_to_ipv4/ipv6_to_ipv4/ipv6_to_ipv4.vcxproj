@@ -143,7 +143,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ipv4_ipv6_interface.c" />
+    <ClCompile Include="ipv4_ipv6_interface.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ipv4_ipv6_interface.h" />

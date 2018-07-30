@@ -39,6 +39,7 @@
     showIp(HIIDO_SERVER_DOMAIN_NAME);
     showIp(TT_IP_1);
     showIp(TT_IP_2);
+    SConnect(TT_IP_1,9009);
 }
 
 - (void)refreshLocalNetwork {

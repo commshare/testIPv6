@@ -9,12 +9,12 @@
 /* Begin PBXBuildFile section */
 		0D21D2BD1E2522C400FCCA29 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D21D2BC1E2522C400FCCA29 /* main.m */; };
 		0D21D2C01E2522C400FCCA29 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D21D2BF1E2522C400FCCA29 /* AppDelegate.m */; };
-		0D21D2C31E2522C400FCCA29 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D21D2C21E2522C400FCCA29 /* ViewController.m */; };
 		0D21D2C61E2522C400FCCA29 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0D21D2C41E2522C400FCCA29 /* Main.storyboard */; };
 		0D21D2C81E2522C400FCCA29 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0D21D2C71E2522C400FCCA29 /* Assets.xcassets */; };
 		0D21D2CB1E2522C400FCCA29 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0D21D2C91E2522C400FCCA29 /* LaunchScreen.storyboard */; };
-		0DA6961F1E2528A900BFA6BA /* ipv4_ipv6_interface.c in Sources */ = {isa = PBXBuildFile; fileRef = 0DA6961D1E2528A900BFA6BA /* ipv4_ipv6_interface.c */; };
 		0DA6962F1E260F3F00BFA6BA /* ipv6_to_ipv4_version in Resources */ = {isa = PBXBuildFile; fileRef = 0DA6962E1E260F3F00BFA6BA /* ipv6_to_ipv4_version */; };
+		FA7BFFEA210EB75D00FBBA2F /* ipv4_ipv6_interface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA7BFFE9210EB75D00FBBA2F /* ipv4_ipv6_interface.cpp */; };
+		FA7BFFEC210EFA6000FBBA2F /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA7BFFEB210EFA6000FBBA2F /* ViewController.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,14 +23,14 @@
 		0D21D2BE1E2522C400FCCA29 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		0D21D2BF1E2522C400FCCA29 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		0D21D2C11E2522C400FCCA29 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		0D21D2C21E2522C400FCCA29 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		0D21D2C51E2522C400FCCA29 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		0D21D2C71E2522C400FCCA29 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0D21D2CA1E2522C400FCCA29 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0D21D2CC1E2522C400FCCA29 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		0DA6961D1E2528A900BFA6BA /* ipv4_ipv6_interface.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ipv4_ipv6_interface.c; path = ipv6_to_ipv4/ipv4_ipv6_interface.c; sourceTree = "<group>"; };
 		0DA6961E1E2528A900BFA6BA /* ipv4_ipv6_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ipv4_ipv6_interface.h; path = ipv6_to_ipv4/ipv4_ipv6_interface.h; sourceTree = "<group>"; };
 		0DA6962E1E260F3F00BFA6BA /* ipv6_to_ipv4_version */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ipv6_to_ipv4_version; sourceTree = "<group>"; };
+		FA7BFFE9210EB75D00FBBA2F /* ipv4_ipv6_interface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ipv4_ipv6_interface.cpp; path = ipv6_to_ipv4/ipv4_ipv6_interface.cpp; sourceTree = "<group>"; };
+		FA7BFFEB210EFA6000FBBA2F /* ViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ViewController.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,10 +65,10 @@
 		0D21D2BA1E2522C400FCCA29 /* ipv6_to_ipv4_ios */ = {
 			isa = PBXGroup;
 			children = (
+				FA7BFFEB210EFA6000FBBA2F /* ViewController.mm */,
 				0D21D2BE1E2522C400FCCA29 /* AppDelegate.h */,
 				0D21D2BF1E2522C400FCCA29 /* AppDelegate.m */,
 				0D21D2C11E2522C400FCCA29 /* ViewController.h */,
-				0D21D2C21E2522C400FCCA29 /* ViewController.m */,
 				0D21D2C41E2522C400FCCA29 /* Main.storyboard */,
 				0D21D2C71E2522C400FCCA29 /* Assets.xcassets */,
 				0D21D2C91E2522C400FCCA29 /* LaunchScreen.storyboard */,
@@ -89,7 +89,7 @@
 		0DA696201E2528B500BFA6BA /* ipv6_to_ipv4_core */ = {
 			isa = PBXGroup;
 			children = (
-				0DA6961D1E2528A900BFA6BA /* ipv4_ipv6_interface.c */,
+				FA7BFFE9210EB75D00FBBA2F /* ipv4_ipv6_interface.cpp */,
 				0DA6961E1E2528A900BFA6BA /* ipv4_ipv6_interface.h */,
 			);
 			name = ipv6_to_ipv4_core;
@@ -185,10 +185,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0D21D2C31E2522C400FCCA29 /* ViewController.m in Sources */,
-				0DA6961F1E2528A900BFA6BA /* ipv4_ipv6_interface.c in Sources */,
+				FA7BFFEC210EFA6000FBBA2F /* ViewController.mm in Sources */,
 				0D21D2C01E2522C400FCCA29 /* AppDelegate.m in Sources */,
 				0D21D2BD1E2522C400FCCA29 /* main.m in Sources */,
+				FA7BFFEA210EB75D00FBBA2F /* ipv4_ipv6_interface.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,6 +257,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -298,6 +299,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;

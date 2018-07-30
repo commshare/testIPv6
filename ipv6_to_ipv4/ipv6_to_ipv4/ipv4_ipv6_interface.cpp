@@ -529,3 +529,86 @@ void showIp(char *hostname){
     freeaddrinfo(res); // free the linked list
     printf("====================");
 }
+
+bool SConnect(const char* domain, unsigned short port)
+{
+    //连接ip
+    char ip[128];
+    memset(ip, 0, sizeof(ip));
+    strcpy(ip, domain); //默认domain就是ip吧
+    
+    void* svraddr = nullptr;
+    int error=-1, svraddr_len;
+    bool ret = true;
+    struct sockaddr_in svraddr_4;
+    struct sockaddr_in6 svraddr_6;
+    
+    //获取网络协议
+    struct addrinfo *result;
+    error = getaddrinfo(ip, NULL, NULL, &result);
+    const struct sockaddr *sa = result->ai_addr;
+    socklen_t maxlen = 128;
+    int m_sock;
+    switch(sa->sa_family) {
+        case AF_INET://ipv4
+            printf("create ipv4 socket  %s\n",domain);
+            if ((m_sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+                perror("socket create failed");
+                ret = false;
+                break;
+            }
+            if(inet_ntop(AF_INET, &(((struct sockaddr_in *)sa)->sin_addr),
+                         ip, maxlen) == NULL){
+                perror(ip);
+                ret = false;
+                break;
+            }
+            svraddr_4.sin_family = AF_INET;
+            svraddr_4.sin_addr.s_addr = inet_addr(ip);
+            svraddr_4.sin_port = htons(port);
+            svraddr_len = sizeof(svraddr_4);
+            svraddr = &svraddr_4;
+            break;
+        case AF_INET6://ipv6
+            printf("create ipv6 socket %s \n",domain);
+            if ((m_sock = socket(AF_INET6, SOCK_STREAM, 0)) < 0) {
+                perror("socket create failed");
+                ret = false;
+                break;
+            }
+            inet_ntop(AF_INET6, &(((struct sockaddr_in6 *)sa)->sin6_addr),
+                      ip, maxlen);
+            
+            printf("socket created ipv6/n");
+            
+            bzero(&svraddr_6, sizeof(svraddr_6));
+            svraddr_6.sin6_family = AF_INET6;
+            svraddr_6.sin6_port = htons(port);
+            if ( inet_pton(AF_INET6, ip, &svraddr_6.sin6_addr) < 0 ) {
+                perror(ip);
+                ret = false;
+                break;
+            }
+            svraddr_len = sizeof(svraddr_6);
+            svraddr = &svraddr_6;
+            break;
+            
+        default:
+            printf("Unknown AF\ns");
+            ret = false;
+    }
+    freeaddrinfo(result);
+    if(!ret)
+    {
+        fprintf(stderr , "Cannot Connect the server!n");
+        return false;
+    }
+    int nret = connect(m_sock, (struct sockaddr*)svraddr, svraddr_len);
+    if(nret== -1  )
+    {
+        printf("conncet to %s fail",domain);
+        return false;
+    }
+    
+    return true;
+}
