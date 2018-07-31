@@ -12,11 +12,25 @@
 #include <string.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <iostream>
 
 #ifndef __APPLE__
 #define IN_LINKLOCALNETNUM	(u_int32_t)0xA9FE0000 /* 169.254.0.0 */
 #define IN_LINKLOCAL(i)		(((u_int32_t)(i) & IN_CLASSB_NET) == IN_LINKLOCALNETNUM)
 #endif
+
+sockaddr_in gm_sockaddrv4;
+sockaddr_in6 gm_sockaddrv6;
+
+//需要在getaddrinfo里获取
+static uint32_t gm_sin6scopeid;
+
+enum EIP_STATCK{
+    E_IPSTACK_NONE  = 0 ,
+    E_IPSTACK_IPV4  = 1 ,
+    E_IPSTACK_IPV6 = 2,
+    E_IPSTACK_DUAL = 3,
+};
 
 const char* PEER_IPV4 = "115.239.211.112";
 const char* PEER_IPV6 = "2001:2::aab1:414d:8373:fe01:373e";
@@ -24,7 +38,9 @@ const char* LOCAL_IPV4 = "192.168.2.2";
 const char* LOCAL_IPV6 = "2001:2::aab1:1c2d:6fd3:a33b:499b";
 const int PEER_SERIVCE_PORT = 80;
 
+#define LOG (printf("(%d) - <%s>\n",/*__FILE__,*/__LINE__,__FUNCTION__),printf)
 
+//sockaddr得到ip地址
 char * inet_ntop_ipv4_ipv6_compatible(const struct sockaddr *sa, char *s, unsigned int maxlen)
 {
     memset(s, 0, maxlen);
@@ -45,6 +61,7 @@ char * inet_ntop_ipv4_ipv6_compatible(const struct sockaddr *sa, char *s, unsign
     return s;
 }
 
+/*ip地址来判断是v4还是v6*/
 int ip_str_family(char* ipstr)
 {
     struct sockaddr_storage temp_sockaddr;
@@ -66,6 +83,7 @@ int ip_str_family(char* ipstr)
 
 char* get_local_valid_net(const char* dev_name, int dev_name_len, char* out_net_info, int max_out_len)
 {
+    LOG("get_local_valid_net devname %s \n",dev_name);
     if (NULL == dev_name){
         printf("\n\nget_local_net printf all ipv4 and ipv6 here, ignore LINKLOCAL\n");
     }
@@ -199,6 +217,7 @@ void getaddrinfo_behavior_individual_case(const char* case_str, int ss_family, c
     assert(NULL == res0->ai_next);  //I want only one result.
     memset(ipstr, 0, sizeof(ipstr));
     p_str = inet_ntop_ipv4_ipv6_compatible(res0->ai_addr, ipstr, sizeof(ipstr));
+    LOG("---IPSTR %s \n",p_str);
     assert(NULL != p_str);
     printf("{%s} %s %s ip->%s port->%d addr_len->%d.\n", case_str, res0->ai_family == AF_INET6 ? "AF_INET6" : "AF_INET", \
            res0->ai_socktype == SOCK_STREAM ? "SOCK_STREAM" : "SOCK_DGRAM", \
@@ -292,7 +311,7 @@ int test_tcp_connect(char* local_ip_str, const char* peer_ipv4, unsigned short p
             freeaddrinfo(resLocal);
             goto End;
         }
-
+        LOG("----BIND TO LOCAL OK ---");
         freeaddrinfo(resLocal);
     }
 
@@ -492,7 +511,9 @@ void showIp(char *hostname){
     struct addrinfo hints, *res, *p;
     int status;
     char ipstr[INET6_ADDRSTRLEN];
-    
+
+
+
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC; // AF_INET or AF_INET6 to force version
     hints.ai_socktype = SOCK_STREAM;
@@ -521,6 +542,8 @@ void showIp(char *hostname){
             struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)p->ai_addr;
             addr = &(ipv6->sin6_addr);
             ipver = "IPv6";
+            gm_sin6scopeid = ipv6->sin6_scope_id;
+            LOG("GOT gm_sin6scopeid %d \n",gm_sin6scopeid);
         }
         // convert the IP to a string and print it:
         inet_ntop(p->ai_family, addr, ipstr, sizeof ipstr);
@@ -540,12 +563,88 @@ void * get_in_addr(struct sockaddr *sa)
 }
 
 void UdpBind(int sd, void * serveraddr, int len){
+    struct sockaddr_in sa;
+    struct sockaddr_in6 sa6;
+    sa.sin_addr.s_addr = INADDR_ANY; // 使用我的ipv4地址
+    sa6.sin6_addr = in6addr_any; //使用我的ipv6地址
+
     if (bind(sd,
              (struct sockaddr *)&serveraddr,
 //             sizeof(serveraddr)) < 0
              len ) <0 )
     {
-        printf("bind() failed \n");
+        printf("bind() failed %s\n",strerror(errno));
+    }
+}
+
+void UdpBindLocal(int sd){
+    //ipv4 还要补充
+    struct sockaddr_in sa;
+    struct sockaddr_in6 sa6;
+    sa.sin_addr.s_addr = INADDR_ANY; // 使用我的ipv4地址
+    
+    //ipv6
+    sa6.sin6_addr = in6addr_any; //使用我的ipv6地址
+    sa6.sin6_port = htons(0);
+    sa6.sin6_family = AF_INET6;
+    sa6.sin6_flowinfo = 0 ;
+    sa6.sin6_scope_id = gm_sin6scopeid;
+    //这个为啥是apple专属的
+    sa6.sin6_len = sizeof(sockaddr_in);
+
+    if (bind(sd,
+             (struct sockaddr *)&sa6,
+            sizeof(sa6)
+              ) <0 )
+    {
+        printf("bind() failed %s\n",strerror(errno));
+    }else{
+        LOG("---UdpBindLocal BIND %d ok \n",sd);
+    }
+}
+
+std::string ipToString(const in6_addr &sin6addr)
+{
+    char ipStr[100];
+    
+#ifdef __APPLE__
+    sprintf(ipStr, "[%hx.%hx.%hx.%hx.%hx.%hx.%d.%d.%d.%d]",
+            sin6addr.__u6_addr.__u6_addr16[0], sin6addr.__u6_addr.__u6_addr16[1], sin6addr.__u6_addr.__u6_addr16[2],
+            sin6addr.__u6_addr.__u6_addr16[3], sin6addr.__u6_addr.__u6_addr16[4], sin6addr.__u6_addr.__u6_addr16[5],
+            sin6addr.__u6_addr.__u6_addr8[12], sin6addr.__u6_addr.__u6_addr8[13],
+            sin6addr.__u6_addr.__u6_addr8[14], sin6addr.__u6_addr.__u6_addr8[15]);
+#else
+    sprintf(ipStr, "[%hx.%hx.%hx.%hx.%hx.%hx.%d.%d.%d.%d]",
+            sin6addr.s6_addr16[0], sin6addr.s6_addr16[1], sin6addr.s6_addr16[2], sin6addr.s6_addr16[3],
+            sin6addr.s6_addr16[4], sin6addr.s6_addr16[5],
+            sin6addr.s6_addr[12], sin6addr.s6_addr[13], sin6addr.s6_addr[14], sin6addr.s6_addr[15]);
+#endif
+    return std::string(ipStr);
+}
+
+std::string ipToString(uint32_t ip)
+{
+    char ipStr[100];
+    sprintf(ipStr, "[%d.%d.%d.%d]", ip & 0xFF, (ip & 0xFF00) >> 8, (ip & 0xFF0000) >> 16, ip >> 24);
+    return std::string(ipStr);
+}
+
+ std::string getsockaddrname( in6_addr ipv6_addr )
+{
+#ifdef __APPLE__
+    bool isUseSockv6 = true;
+#else
+    bool isUseSockv6 = true;  //(m_elocalstack == E_IPSTACK_IPV6);
+#endif
+    
+    if (isUseSockv6)
+    {
+       // return ipToString(gm_sockaddrv6.sin6_addr);
+        return ipToString(ipv6_addr);
+    }
+    else
+    {
+        return ipToString(gm_sockaddrv4.sin_addr.s_addr);
     }
 }
 int UdpSend(int sock,char *msg,int size, void *svraddr,socklen_t svraddr_len)
@@ -623,11 +722,12 @@ bool SConnect(const char* domain, unsigned short port)
             inet_ntop(AF_INET6, &(((struct sockaddr_in6 *)sa)->sin6_addr),
                       ip, maxlen);
             
-            printf("socket created ipv6/n");
+            printf("socket created ipv6 %s\n",ip);
             
             bzero(&svraddr_6, sizeof(svraddr_6));
             svraddr_6.sin6_family = AF_INET6;
             svraddr_6.sin6_port = htons(port);
+            
             if ( inet_pton(AF_INET6, ip, &svraddr_6.sin6_addr) < 0 )
             {
                 perror(ip);
@@ -650,8 +750,14 @@ bool SConnect(const char* domain, unsigned short port)
         fprintf(stderr , "Cannot Connect the server!\n");
         return false;
     }
-    UdpBind(m_sock, svraddr, sizeof(svraddr));
+    printf("----connect ok %s \n",domain);
+    printf("nat64sample \n");
+    nat64Sample();
+    printf("----bind --%d- \n",m_sock);
+   // UdpBind(m_sock, svraddr, sizeof(svraddr));
+    UdpBindLocal(m_sock);
     char * msg = "thechinaOne";
+    printf("----send ---%s \n",msg);
     UdpSend(m_sock,msg,sizeof(msg),svraddr, sizeof(svraddr));
     return true;
 }
@@ -701,3 +807,40 @@ bool SConnect(const char* domain, unsigned short port)
     }
     return err;
 }
+
+void nat64Sample(){
+    //NAT64 address sample
+    //address init
+    const char* ipv6_str ="64:ff9b::14.17.32.211";
+    //in6_addr是ipv6的地址
+    in6_addr ipv6_addr = {0};
+    int v6_r = inet_pton(AF_INET6, ipv6_str, &ipv6_addr); //ipv6 字符串地址转为int类型
+    /*set it global 不行呢 */
+    //gm_sockaddrv6 = ipv6_addr;
+    /* TODO 注意，字节序有发生改变么？6400.9bff ？
+     --inet_pton- 64:ff9b::14.17.32.211-to [6400.9bff.0.0.0.0.14.17.32.211] ret  1
+     */
+    LOG("-1-inet_pton- %s-to %s ret  %d \n",ipv6_str,getsockaddrname(ipv6_addr).c_str(),v6_r);
+    //V6 地址
+    sockaddr_in6 v6_addr = {0};
+    v6_addr.sin6_family = AF_INET6;
+    v6_addr.sin6_port = htons(80);  //v6的端口，怎么才能任意以下呢？
+    v6_addr.sin6_addr = ipv6_addr;  //这个是转过来的int类型的
+    
+    //socket connect
+    int v6_sock = socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP);
+    //std::string
+    char * v6_error;
+    if (0 != connect(v6_sock, (sockaddr*)&v6_addr, 28)) //使用这个tcp socket 去连接远端v6服务器
+    {
+        v6_error = strerror(errno);
+    }
+    
+    //get local ip
+    sockaddr_in6 v6_local_addr = {0};
+    socklen_t v6_local_addr_len = 28;
+    char v6_str_local_addr[64] = {0};
+    getpeername(v6_sock, (sockaddr*)&v6_local_addr, &v6_local_addr_len);
+    inet_ntop(v6_local_addr.sin6_family, &v6_local_addr.sin6_addr, v6_str_local_addr, 64);
+    LOG("local ip %s \n",v6_str_local_addr);  //!!!! 没有输出啊,字符 array数组是这么打印么？
+    close(v6_sock);}

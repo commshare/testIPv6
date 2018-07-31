@@ -28,6 +28,7 @@ void init() {
 #define closesocket close
 #endif
 
+/*从sockaddr_storage 中读取地址信息，填充到host和port里*/
 static void readSockaddr(const struct sockaddr_storage* addr, std::string& host, unsigned int& port) {
     char buffer[INET6_ADDRSTRLEN];
     if(addr->ss_family == AF_INET) {
@@ -45,7 +46,7 @@ static void readSockaddr(const struct sockaddr_storage* addr, std::string& host,
 Socket::AddrinfoContainer Socket::getSocketInfoFor(const char* host, unsigned int port, bool wildcardAddress) {
     struct addrinfo conf, *res;
     memset(&conf, 0, sizeof(conf));
-    conf.ai_flags = AI_V4MAPPED;
+    conf.ai_flags = AI_V4MAPPED; /* accept IPv4-mapped IPv6 address */
     switch(ipVersion) {
         case IPv4:
             conf.ai_family = AF_INET;
@@ -57,7 +58,7 @@ Socket::AddrinfoContainer Socket::getSocketInfoFor(const char* host, unsigned in
             conf.ai_family = AF_UNSPEC;
             break;
     }
-    if(wildcardAddress)
+    if(wildcardAddress) /*任意网卡？*/
         conf.ai_flags |= AI_PASSIVE;
     switch(type) {
         case TCP_CLIENT:
@@ -73,7 +74,7 @@ Socket::AddrinfoContainer Socket::getSocketInfoFor(const char* host, unsigned in
     }
     char portStr[10];
     snprintf(portStr, 10, "%u", port);
-    int result = getaddrinfo(host, portStr, &conf, &res);
+    int result = getaddrinfo(host, portStr, &conf, &res); /*所有的网络地址*/
     if(result != 0)
         throw Exception(Exception::ERROR_RESOLVING_ADDRESS);
     return AddrinfoContainer(res);
@@ -184,23 +185,26 @@ Socket::int_type Socket::overflow(int_type c) {
 
 void Socket::initSocket(bool blockingConnect) {
     AddrinfoContainer info;
-    if(type == TCP_CLIENT)
+    if(type == TCP_CLIENT) /*如果是tcp的客户端，需要知道远程的地址和端口*/
         info = getSocketInfoFor(hostRemote.c_str(), portRemote, false);
-    else {
+    else { /*其他的服务端、udp啥的，只需要知道本地的？*/
         const char* host;
         if(!hostLocal.compare("") || !hostLocal.compare("*"))
             host = NULL;
         else
             host = hostLocal.c_str();
+        /*这个啥获取本地的*/
         info = getSocketInfoFor(host, portLocal, true);
     }
     struct addrinfo* nextAddr = info.get();
     while(nextAddr) {
+        /*每个地址建立一个socket*/
         handle = socket(nextAddr->ai_family, nextAddr->ai_socktype, nextAddr->ai_protocol);
-        if(handle == -1) {
+        if(handle == -1) { /*出错了*/
             nextAddr = nextAddr->ai_next;
             continue;
         }
+        /*ip地址信息是自己读取到的*/
         switch(nextAddr->ai_family) {
             case AF_INET:
                 ipVersion = IPv4;
@@ -223,7 +227,7 @@ void Socket::initSocket(bool blockingConnect) {
             disconnect();
             throw Exception(Exception::ERROR_SET_SOCK_OPT);
         }
-        if(ipVersion == IPv6) {
+        if(ipVersion == IPv6) { /*如果是ipv6 要这么搞*/
             int flag = 0;
             if(setsockopt(handle, IPPROTO_IPV6, IPV6_V6ONLY, reinterpret_cast<const char*>(&flag), sizeof(flag)) == -1) {
                 disconnect();
@@ -296,6 +300,7 @@ void Socket::initAsTcpClient(const std::string& _hostRemote, unsigned _portRemot
 
 void Socket::initAsTcpServer(const std::string& _hostLocal, unsigned _portLocal, unsigned _listenQueue) {
     type = TCP_SERVER;
+    /*服务器的端口和主机都是本地的*/
     hostLocal = _hostLocal;
     portLocal = _portLocal;
     status = _listenQueue;
@@ -304,6 +309,7 @@ void Socket::initAsTcpServer(const std::string& _hostLocal, unsigned _portLocal,
 
 void Socket::initAsUdpPeer(const std::string& _hostLocal, unsigned _portLocal) {
     type = UDP_PEER;
+    /*udp的host和port也是本地的么？*/
     hostLocal = _hostLocal;
     portLocal = _portLocal;
     initSocket(false);
@@ -342,7 +348,7 @@ Socket::Status Socket::getStatus() const {
         return (Socket::Status)status;
 }
 
-std::streamsize Socket::showmanyc() {
+std::streamsize Socket::showmanyc() { /*这个是在干啥？*/
     #ifdef WINVER
     unsigned long result = 0;
     if(ioctlsocket(handle, FIONREAD, &result)) {
@@ -356,7 +362,7 @@ std::streamsize Socket::showmanyc() {
         return result;
 }
 
-std::streamsize Socket::advanceInputBuffer() {
+std::streamsize Socket::advanceInputBuffer() { /*这个是在自动调整输入缓冲么？*/
     if(inputIntermediateSize == 0) // No input buffer
         return 0;
     std::streamsize inAvail;
@@ -391,17 +397,20 @@ std::streamsize Socket::receive(char_type* buffer, std::streamsize size) {
             #else
             unsigned int addrSize = sizeof(remoteAddr);
             #endif
+            /*接受数据的时候，socket地址，也用兼容型的*/
             int result = recvfrom(handle, (char*)buffer, size, 0, reinterpret_cast<struct sockaddr*>(&remoteAddr), &addrSize);
             if(result <= 0) {
                 portRemote = 0;
                 hostRemote = "";
                 throw Exception(Exception::ERROR_READ);
             } else
+                /*从拿到的地址里，解析对端的情况*/
                 readSockaddr(&remoteAddr, hostRemote, portRemote);
             return result;
         }
         case TCP_CLIENT:
         case TCP_SERVERS_CLIENT: {
+            /*tcp的客户端和服务器都啥直接接受数据*/
             int result = recv(handle, (char*)buffer, size, 0);
             if(result <= 0)
                 throw Exception(Exception::ERROR_READ);
@@ -421,6 +430,7 @@ std::streamsize Socket::send(const char_type* buffer, std::streamsize size) {
         return 0;
     switch(type) {
         case UDP_PEER: {
+            /*udp 还是要先拿出地址信息，然后sendto的时候要用到这个地址*/
             AddrinfoContainer info = getSocketInfoFor(hostRemote.c_str(), portRemote, false);
             size_t sentBytes = 0;
             while(sentBytes < (size_t)size) {
@@ -434,7 +444,7 @@ std::streamsize Socket::send(const char_type* buffer, std::streamsize size) {
             return sentBytes;
         }
         case TCP_CLIENT:
-        case TCP_SERVERS_CLIENT: {
+        case TCP_SERVERS_CLIENT: { /*tcp啥的，还是直接向handle直接发*/
             size_t sentBytes = 0;
             while(sentBytes < (size_t)size) {
                 int result = ::send(handle, (const char*)buffer + sentBytes, size - sentBytes, 0);

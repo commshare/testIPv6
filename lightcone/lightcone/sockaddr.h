@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <string>
 #include <utility>
+#include <netinet/in.h>
 #include "netinc.h"
 
 namespace lightcone {
@@ -81,7 +82,13 @@ friend class Udp;
     //! Return a hash based on remote address
     //! \return hash based on remote address
     uint32_t hash() const;
-
+/*wechat
+ * typedef union sockaddr_union {
+    struct sockaddr     generic;
+    struct sockaddr_in  in;
+    struct sockaddr_in6 in6;
+} sockaddr_union;
+ * */
  private:
     union {
         struct sockaddr     base;
@@ -93,3 +100,16 @@ friend class Udp;
 }  // namespace lightcone
 
 #endif  // LIGHTCONE_SOCKADDR_H__
+/*
+ *
+ * Socket address, internet style.
+ */
+/*
+struct sockaddr_in {
+    __uint8_t	sin_len;
+    sa_family_t	sin_family;
+    in_port_t	sin_port;
+    struct	in_addr sin_addr;
+    char		sin_zero[8];
+};
+ * */

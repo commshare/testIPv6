@@ -85,7 +85,7 @@ int test_tcp_connect(char* local_ip_str, const char* peer_ipv4, unsigned short p
 
 void getaddrinfo_behavior_test();
 void exported_test();
-
+void nat64Sample();
 void showIp(char *hostname);
 bool SConnect(const char* domain, unsigned short port);
 #endif /* ipv4_ipv6_interface_h */

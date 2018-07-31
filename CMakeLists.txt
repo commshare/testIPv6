@@ -1,0 +1,427 @@
+cmake_minimum_required(VERSION 3.10)
+project(ipv6tt)
+
+set(CMAKE_CXX_STANDARD 11)
+
+include_directories(client_network)
+include_directories(IPV4-over-IPV6-android-VPN/4over6_server)
+include_directories(ipv6_to_ipv4/ipv6_to_ipv4)
+include_directories(ipv6_to_ipv4/ipv6_to_ipv4_ios)
+include_directories(libsocket/include)
+include_directories(libsocket/include/socket)
+include_directories(libsocket/include/socket/base)
+include_directories(libsocket/include/socket/core)
+include_directories(libsocket/include/socket/inet)
+include_directories(libsocket/include/socket/ip)
+include_directories(libsocket/lib/ifaddrs)
+include_directories(libsocket/lib/libchen/include)
+include_directories(libsocket/lib/libchen/include/chen)
+include_directories(libsocket/lib/libchen/include/chen/base)
+include_directories(libsocket/lib/libchen/include/chen/data)
+include_directories(libsocket/lib/libchen/include/chen/mt)
+include_directories(libsocket/lib/libchen/include/chen/sys)
+include_directories(libsocket/lib/libchen/include/chen/time)
+include_directories(libsocket/lib/libchen/include/chen/tool)
+include_directories(libsocket/lib/libchen/test/lib/googletest/googlemock/include)
+include_directories(libsocket/lib/libchen/test/lib/googletest/googlemock/include/gmock)
+include_directories(libsocket/lib/libchen/test/lib/googletest/googlemock/include/gmock/internal)
+include_directories(libsocket/lib/libchen/test/lib/googletest/googlemock/include/gmock/internal/custom)
+include_directories(libsocket/lib/libchen/test/lib/googletest/googlemock/test)
+include_directories(libsocket/lib/libchen/test/lib/googletest/googletest/include)
+include_directories(libsocket/lib/libchen/test/lib/googletest/googletest/include/gtest)
+include_directories(libsocket/lib/libchen/test/lib/googletest/googletest/include/gtest/internal)
+include_directories(libsocket/lib/libchen/test/lib/googletest/googletest/include/gtest/internal/custom)
+include_directories(libsocket/lib/libchen/test/lib/googletest/googletest/samples)
+include_directories(libsocket/lib/libchen/test/lib/googletest/googletest/src)
+include_directories(libsocket/lib/libchen/test/lib/googletest/googletest/test)
+include_directories(libsocket/lib/libchen/test/lib/googletest/googletest/xcode/Samples/FrameworkSample)
+include_directories(libsocket/lib/libchen/test/src)
+include_directories(lightcone/example/benchmark/src)
+include_directories(lightcone/lightcone)
+include_directories(netLink/include)
+include_directories(networkCommunication/client_service/ipv6source/ipv6source)
+include_directories(s-net_linux_win)
+
+add_executable(ipv6tt
+        client_network/common_algorithm.h
+        client_network/common_base.h
+        client_network/common_codeengine.cpp
+        client_network/common_codeengine.h
+        client_network/common_datetime.h
+        client_network/common_define.h
+        client_network/common_string.h
+        client_network/config.h
+        client_network/connection.cpp
+        client_network/connection.h
+        client_network/ikcp.c
+        client_network/ikcp.h
+        client_network/network_connection_manager.cpp
+        client_network/network_connection_manager.h
+        client_network/tcp_connection.cpp
+        client_network/tcp_connection.h
+        client_network/udp_connection.cpp
+        client_network/udp_connection.h
+        client_network/udp_session.cpp
+        client_network/udp_session.h
+        IPV4-over-IPV6-android-VPN/4over6_server/main.cpp
+        IPV4-over-IPV6-android-VPN/4over6_server/native-lib.cpp
+        IPV4-over-IPV6-android-VPN/4over6_server/server.cpp
+        IPV4-over-IPV6-android-VPN/4over6_server/server.h
+        IPV4-over-IPV6-android-VPN/4over6_server/test.cpp
+        IPV4-over-IPV6-android-VPN/4over6_server/testtun.cpp
+        IPV4-over-IPV6-android-VPN/4over6_vpn/app/src/main/cpp/native-lib.cpp
+        ipv6_to_ipv4/ipv6_to_ipv4/ipv4_ipv6_interface.cpp
+        ipv6_to_ipv4/ipv6_to_ipv4/ipv4_ipv6_interface.h
+        ipv6_to_ipv4/ipv6_to_ipv4_ios/AppDelegate.h
+        ipv6_to_ipv4/ipv6_to_ipv4_ios/AppDelegate.m
+        ipv6_to_ipv4/ipv6_to_ipv4_ios/main.m
+        ipv6_to_ipv4/ipv6_to_ipv4_ios/ViewController.h
+        ipv6_to_ipv4/ipv6_to_ipv4_ios/ViewController.mm
+        libsocket/include/socket/base/basic_address.hpp
+        libsocket/include/socket/base/basic_option.hpp
+        libsocket/include/socket/base/basic_socket.hpp
+        libsocket/include/socket/base/ev_base.hpp
+        libsocket/include/socket/base/ev_event.hpp
+        libsocket/include/socket/base/ev_handle.hpp
+        libsocket/include/socket/base/ev_timer.hpp
+        libsocket/include/socket/core/ioctl.hpp
+        libsocket/include/socket/core/reactor.hpp
+        libsocket/include/socket/core/startup.hpp
+        libsocket/include/socket/inet/inet_adapter.hpp
+        libsocket/include/socket/inet/inet_address.hpp
+        libsocket/include/socket/inet/inet_resolver.hpp
+        libsocket/include/socket/ip/ip_address.hpp
+        libsocket/include/socket/ip/ip_option.hpp
+        libsocket/include/socket/ip/ip_version.hpp
+        libsocket/include/socket/config.hpp
+        libsocket/include/socket/socket.hpp
+        libsocket/lib/ifaddrs/ifaddrs.cpp
+        libsocket/lib/ifaddrs/ifaddrs.hpp
+        libsocket/lib/libchen/include/chen/base/any.hpp
+        libsocket/lib/libchen/include/chen/base/iterator.hpp
+        libsocket/lib/libchen/include/chen/base/map.hpp
+        libsocket/lib/libchen/include/chen/base/num.hpp
+        libsocket/lib/libchen/include/chen/base/regex.hpp
+        libsocket/lib/libchen/include/chen/base/str.hpp
+        libsocket/lib/libchen/include/chen/base/utf8.hpp
+        libsocket/lib/libchen/include/chen/base/vector.hpp
+        libsocket/lib/libchen/include/chen/data/ini.hpp
+        libsocket/lib/libchen/include/chen/data/json.hpp
+        libsocket/lib/libchen/include/chen/mt/callable.hpp
+        libsocket/lib/libchen/include/chen/mt/semaphore.hpp
+        libsocket/lib/libchen/include/chen/mt/threadpool.hpp
+        libsocket/lib/libchen/include/chen/sys/fs.hpp
+        libsocket/lib/libchen/include/chen/sys/proc.hpp
+        libsocket/lib/libchen/include/chen/sys/sys.hpp
+        libsocket/lib/libchen/include/chen/time/date.hpp
+        libsocket/lib/libchen/include/chen/time/time.hpp
+        libsocket/lib/libchen/include/chen/tool/cmd.hpp
+        libsocket/lib/libchen/include/chen/tool/log.hpp
+        libsocket/lib/libchen/include/chen/chen.hpp
+        libsocket/lib/libchen/src/base/num.cpp
+        libsocket/lib/libchen/src/base/regex.cpp
+        libsocket/lib/libchen/src/base/str.cpp
+        libsocket/lib/libchen/src/base/utf8.cpp
+        libsocket/lib/libchen/src/data/ini.cpp
+        libsocket/lib/libchen/src/data/json.cpp
+        libsocket/lib/libchen/src/mt/semaphore.cpp
+        libsocket/lib/libchen/src/mt/threadpool.cpp
+        libsocket/lib/libchen/src/sys/fs.cpp
+        libsocket/lib/libchen/src/sys/fs.unix.cpp
+        libsocket/lib/libchen/src/sys/fs.win.cpp
+        libsocket/lib/libchen/src/sys/proc.unix.cpp
+        libsocket/lib/libchen/src/sys/proc.win.cpp
+        libsocket/lib/libchen/src/sys/sys.cpp
+        libsocket/lib/libchen/src/sys/sys.unix.cpp
+        libsocket/lib/libchen/src/sys/sys.win.cpp
+        libsocket/lib/libchen/src/time/date.unix.cpp
+        libsocket/lib/libchen/src/time/date.win.cpp
+        libsocket/lib/libchen/src/time/time.cpp
+        libsocket/lib/libchen/src/tool/cmd.cpp
+        libsocket/lib/libchen/src/tool/log.cpp
+        libsocket/lib/libchen/test/lib/googletest/googlemock/include/gmock/internal/custom/gmock-generated-actions.h
+        libsocket/lib/libchen/test/lib/googletest/googlemock/include/gmock/internal/custom/gmock-matchers.h
+        libsocket/lib/libchen/test/lib/googletest/googlemock/include/gmock/internal/custom/gmock-port.h
+        libsocket/lib/libchen/test/lib/googletest/googlemock/include/gmock/internal/gmock-generated-internal-utils.h
+        libsocket/lib/libchen/test/lib/googletest/googlemock/include/gmock/internal/gmock-internal-utils.h
+        libsocket/lib/libchen/test/lib/googletest/googlemock/include/gmock/internal/gmock-port.h
+        libsocket/lib/libchen/test/lib/googletest/googlemock/include/gmock/gmock-actions.h
+        libsocket/lib/libchen/test/lib/googletest/googlemock/include/gmock/gmock-cardinalities.h
+        libsocket/lib/libchen/test/lib/googletest/googlemock/include/gmock/gmock-generated-actions.h
+        libsocket/lib/libchen/test/lib/googletest/googlemock/include/gmock/gmock-generated-function-mockers.h
+        libsocket/lib/libchen/test/lib/googletest/googlemock/include/gmock/gmock-generated-matchers.h
+        libsocket/lib/libchen/test/lib/googletest/googlemock/include/gmock/gmock-generated-nice-strict.h
+        libsocket/lib/libchen/test/lib/googletest/googlemock/include/gmock/gmock-matchers.h
+        libsocket/lib/libchen/test/lib/googletest/googlemock/include/gmock/gmock-more-actions.h
+        libsocket/lib/libchen/test/lib/googletest/googlemock/include/gmock/gmock-more-matchers.h
+        libsocket/lib/libchen/test/lib/googletest/googlemock/include/gmock/gmock-spec-builders.h
+        libsocket/lib/libchen/test/lib/googletest/googlemock/include/gmock/gmock.h
+        libsocket/lib/libchen/test/lib/googletest/googlemock/src/gmock-all.cc
+        libsocket/lib/libchen/test/lib/googletest/googlemock/src/gmock-cardinalities.cc
+        libsocket/lib/libchen/test/lib/googletest/googlemock/src/gmock-internal-utils.cc
+        libsocket/lib/libchen/test/lib/googletest/googlemock/src/gmock-matchers.cc
+        libsocket/lib/libchen/test/lib/googletest/googlemock/src/gmock-spec-builders.cc
+        libsocket/lib/libchen/test/lib/googletest/googlemock/src/gmock.cc
+        libsocket/lib/libchen/test/lib/googletest/googlemock/src/gmock_main.cc
+        libsocket/lib/libchen/test/lib/googletest/googlemock/test/gmock-actions_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googlemock/test/gmock-cardinalities_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googlemock/test/gmock-generated-actions_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googlemock/test/gmock-generated-function-mockers_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googlemock/test/gmock-generated-internal-utils_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googlemock/test/gmock-generated-matchers_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googlemock/test/gmock-internal-utils_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googlemock/test/gmock-matchers_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googlemock/test/gmock-more-actions_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googlemock/test/gmock-nice-strict_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googlemock/test/gmock-port_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googlemock/test/gmock-spec-builders_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googlemock/test/gmock_all_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googlemock/test/gmock_ex_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googlemock/test/gmock_leak_test_.cc
+        libsocket/lib/libchen/test/lib/googletest/googlemock/test/gmock_link2_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googlemock/test/gmock_link_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googlemock/test/gmock_link_test.h
+        libsocket/lib/libchen/test/lib/googletest/googlemock/test/gmock_output_test_.cc
+        libsocket/lib/libchen/test/lib/googletest/googlemock/test/gmock_stress_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googlemock/test/gmock_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/codegear/gtest_all.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/codegear/gtest_link.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/include/gtest/internal/custom/gtest-port.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/include/gtest/internal/custom/gtest-printers.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/include/gtest/internal/custom/gtest.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/include/gtest/internal/gtest-death-test-internal.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/include/gtest/internal/gtest-filepath.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/include/gtest/internal/gtest-internal.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/include/gtest/internal/gtest-linked_ptr.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/include/gtest/internal/gtest-param-util-generated.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/include/gtest/internal/gtest-param-util.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/include/gtest/internal/gtest-port-arch.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/include/gtest/internal/gtest-port.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/include/gtest/internal/gtest-string.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/include/gtest/internal/gtest-tuple.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/include/gtest/internal/gtest-type-util.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/include/gtest/gtest-death-test.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/include/gtest/gtest-message.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/include/gtest/gtest-param-test.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/include/gtest/gtest-printers.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/include/gtest/gtest-spi.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/include/gtest/gtest-test-part.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/include/gtest/gtest-typed-test.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/include/gtest/gtest.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/include/gtest/gtest_pred_impl.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/include/gtest/gtest_prod.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/samples/prime_tables.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/samples/sample1.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/samples/sample1.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/samples/sample10_unittest.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/samples/sample1_unittest.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/samples/sample2.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/samples/sample2.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/samples/sample2_unittest.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/samples/sample3-inl.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/samples/sample3_unittest.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/samples/sample4.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/samples/sample4.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/samples/sample4_unittest.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/samples/sample5_unittest.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/samples/sample6_unittest.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/samples/sample7_unittest.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/samples/sample8_unittest.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/samples/sample9_unittest.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/src/gtest-all.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/src/gtest-death-test.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/src/gtest-filepath.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/src/gtest-internal-inl.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/src/gtest-port.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/src/gtest-printers.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/src/gtest-test-part.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/src/gtest-typed-test.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/src/gtest.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/src/gtest_main.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest-death-test_ex_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest-death-test_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest-filepath_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest-linked_ptr_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest-listener_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest-message_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest-options_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest-param-test2_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest-param-test_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest-param-test_test.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest-port_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest-printers_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest-test-part_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest-tuple_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest-typed-test2_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest-typed-test_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest-typed-test_test.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest-unittest-api_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest_all_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest_break_on_failure_unittest_.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest_catch_exceptions_test_.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest_color_test_.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest_env_var_test_.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest_environment_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest_filter_unittest_.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest_help_test_.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest_list_tests_unittest_.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest_main_unittest.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest_no_test_unittest.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest_output_test_.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest_pred_impl_unittest.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest_premature_exit_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest_prod_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest_repeat_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest_shuffle_test_.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest_sole_header_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest_stress_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest_throw_on_failure_ex_test.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest_throw_on_failure_test_.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest_uninitialized_test_.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest_unittest.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest_xml_outfile1_test_.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest_xml_outfile2_test_.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/gtest_xml_output_unittest_.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/production.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/test/production.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/xcode/Samples/FrameworkSample/widget.cc
+        libsocket/lib/libchen/test/lib/googletest/googletest/xcode/Samples/FrameworkSample/widget.h
+        libsocket/lib/libchen/test/lib/googletest/googletest/xcode/Samples/FrameworkSample/widget_test.cc
+        libsocket/lib/libchen/test/src/base/any.cpp
+        libsocket/lib/libchen/test/src/base/iterator.cpp
+        libsocket/lib/libchen/test/src/base/map.cpp
+        libsocket/lib/libchen/test/src/base/num.cpp
+        libsocket/lib/libchen/test/src/base/regex.cpp
+        libsocket/lib/libchen/test/src/base/str.cpp
+        libsocket/lib/libchen/test/src/base/utf8.cpp
+        libsocket/lib/libchen/test/src/base/vector.cpp
+        libsocket/lib/libchen/test/src/data/ini.cpp
+        libsocket/lib/libchen/test/src/data/json.cpp
+        libsocket/lib/libchen/test/src/mt/threadpool.cpp
+        libsocket/lib/libchen/test/src/sys/fs.cpp
+        libsocket/lib/libchen/test/src/sys/sys.cpp
+        libsocket/lib/libchen/test/src/time/date.cpp
+        libsocket/lib/libchen/test/src/tool/cmd.cpp
+        libsocket/lib/libchen/test/src/conf.cpp
+        libsocket/lib/libchen/test/src/conf.hpp
+        libsocket/lib/libchen/test/src/main.cpp
+        libsocket/src/base/basic_option.cpp
+        libsocket/src/base/basic_socket.cpp
+        libsocket/src/base/ev_base.cpp
+        libsocket/src/base/ev_event.linux.cpp
+        libsocket/src/base/ev_event.unix.cpp
+        libsocket/src/base/ev_event.win.cpp
+        libsocket/src/base/ev_handle.cpp
+        libsocket/src/base/ev_timer.cpp
+        libsocket/src/core/ioctl.unix.cpp
+        libsocket/src/core/ioctl.win.cpp
+        libsocket/src/core/reactor.cpp
+        libsocket/src/core/reactor.linux.cpp
+        libsocket/src/core/reactor.unix.cpp
+        libsocket/src/core/reactor.win.cpp
+        libsocket/src/core/startup.unix.cpp
+        libsocket/src/core/startup.win.cpp
+        libsocket/src/inet/inet_adapter.unix.cpp
+        libsocket/src/inet/inet_adapter.win.cpp
+        libsocket/src/inet/inet_address.cpp
+        libsocket/src/inet/inet_resolver.cpp
+        libsocket/src/ip/ip_address.cpp
+        libsocket/src/ip/ip_option.cpp
+        libsocket/src/ip/ip_version.cpp
+        libsocket/test/src/base/basic_option.cpp
+        libsocket/test/src/base/basic_socket.cpp
+        libsocket/test/src/core/reactor_echo.cpp
+        libsocket/test/src/core/reactor_timer.cpp
+        libsocket/test/src/inet/inet_adapter.cpp
+        libsocket/test/src/inet/inet_address.cpp
+        libsocket/test/src/inet/inet_resolver.cpp
+        libsocket/test/src/ip/ip_address.cpp
+        libsocket/test/src/ip/ip_option.cpp
+        libsocket/test/src/main.cpp
+        lightcone/example/benchmark/src/echoserver.cpp
+        lightcone/example/benchmark/src/echoserver.h
+        lightcone/example/benchmark/src/main.cpp
+        lightcone/example/benchmark/src/tester.cpp
+        lightcone/example/benchmark/src/tester.h
+        lightcone/lightcone/test/beacon.cpp
+        lightcone/lightcone/test/buffer.cpp
+        lightcone/lightcone/test/engine.cpp
+        lightcone/lightcone/test/threads.cpp
+        lightcone/lightcone/test/udp.cpp
+        lightcone/lightcone/beacon.cpp
+        lightcone/lightcone/beacon.h
+        lightcone/lightcone/buffer.cpp
+        lightcone/lightcone/buffer.h
+        lightcone/lightcone/byteorder.h
+        lightcone/lightcone/calendar.h
+        lightcone/lightcone/cmdarg.cpp
+        lightcone/lightcone/cmdarg.h
+        lightcone/lightcone/copyable.h
+        lightcone/lightcone/lightcone.h
+        lightcone/lightcone/loadbalancer.h
+        lightcone/lightcone/msgqueue.h
+        lightcone/lightcone/netengine.cpp
+        lightcone/lightcone/netengine.h
+        lightcone/lightcone/netinc.h
+        lightcone/lightcone/netpoller.cpp
+        lightcone/lightcone/netpoller.h
+        lightcone/lightcone/network.cpp
+        lightcone/lightcone/network.h
+        lightcone/lightcone/sockaddr.cpp
+        lightcone/lightcone/sockaddr.h
+        lightcone/lightcone/socket.cpp
+        lightcone/lightcone/socket.h
+        lightcone/lightcone/sysinfo.cpp
+        lightcone/lightcone/sysinfo.h
+        lightcone/lightcone/tcp.cpp
+        lightcone/lightcone/tcp.h
+        lightcone/lightcone/threads.cpp
+        lightcone/lightcone/threads.h
+        lightcone/lightcone/udp.cpp
+        lightcone/lightcone/udp.h
+        netLink/include/Container.h
+        netLink/include/ContainerHeader.h
+        netLink/include/Core.h
+        netLink/include/Data.h
+        netLink/include/Element.h
+        netLink/include/Header.h
+        netLink/include/MsgPack.h
+        netLink/include/MsgPackSocket.h
+        netLink/include/netLink.h
+        netLink/include/Number.h
+        netLink/include/Primitive.h
+        netLink/include/Socket.h
+        netLink/include/StreamManager.h
+        netLink/include/Utf8.h
+        netLink/src/examples/tcp.cpp
+        netLink/src/examples/udp.cpp
+        netLink/src/MsgPack.cpp
+        netLink/src/Socket.cpp
+        netLink/src/SocketManager.cpp
+        netLink/src/Utf8.cpp
+        networkCommunication/client_service/ipv6source/ipv6source/CvvImage.cpp
+        networkCommunication/client_service/ipv6source/ipv6source/CvvImage.h
+        networkCommunication/client_service/ipv6source/ipv6source/DJWStatic.cpp
+        networkCommunication/client_service/ipv6source/ipv6source/DJWStatic.h
+        networkCommunication/client_service/ipv6source/ipv6source/ipv6source.cpp
+        networkCommunication/client_service/ipv6source/ipv6source/ipv6source.h
+        networkCommunication/client_service/ipv6source/ipv6source/ipv6sourceDlg.cpp
+        networkCommunication/client_service/ipv6source/ipv6source/ipv6sourceDlg.h
+        networkCommunication/client_service/ipv6source/ipv6source/resource.h
+        networkCommunication/client_service/ipv6source/ipv6source/stdafx.cpp
+        networkCommunication/client_service/ipv6source/ipv6source/stdafx.h
+        networkCommunication/client_service/ipv6source/ipv6source/targetver.h
+        networkCommunication/client_service/ipv4_client.cpp
+        networkCommunication/client_service/ipv4_service.cpp
+        networkCommunication/client_service/ipv6_client.cpp
+        networkCommunication/client_service/ipv6_service.cpp
+        ref/local_ipstack.cc.txt.IPv6_only.cpp
+        ref/native_ip_synthesizer.cc
+        s-net_linux_win/main.cpp
+        s-net_linux_win/snet.hpp
+        s-net_linux_win/snet_inet_ntop.cpp
+        s-net_linux_win/snet_inet_pton.cpp
+        s-net_linux_win/snet_poll.cpp
+        s-net_linux_win/snet_tcp_client.cpp
+        s-net_linux_win/snet_tcp_server.cpp
+        s-net_linux_win/snet_udp_socket.cpp)
