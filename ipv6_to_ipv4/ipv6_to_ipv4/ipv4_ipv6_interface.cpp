@@ -668,7 +668,8 @@ int UdpSend(int sock,char *msg,int size, void *svraddr,socklen_t svraddr_len)
 void UdpClose(int sock){
     ::close(sock);
 }
-bool SConnect(const char* domain, unsigned short port)
+
+bool SConnect(const char* domain, unsigned short port, int type)
 {
     //连接ip
     char ip[128];
@@ -712,8 +713,15 @@ bool SConnect(const char* domain, unsigned short port)
             svraddr = &svraddr_4;
             break;
         case AF_INET6://ipv6
-            printf("create ipv6 socket %s \n",domain);
-            if ((m_sock = socket(AF_INET6, SOCK_STREAM, 0)) < 0)
+            int mode ;
+            if (type ==CLI_TCP){
+               mode= SOCK_STREAM;
+            }else{
+                mode = SOCK_DGRAM;
+            }
+            LOG("---create ipv6 socket %s mode %d\n",domain,mode);
+
+            if ((m_sock = socket(AF_INET6, mode, 0)) < 0)
             {
                 perror("socket create v6 failed");
                 ret = false;
@@ -722,7 +730,7 @@ bool SConnect(const char* domain, unsigned short port)
             inet_ntop(AF_INET6, &(((struct sockaddr_in6 *)sa)->sin6_addr),
                       ip, maxlen);
             
-            printf("socket created ipv6 %s %d %d\n",ip,port,m_sock);
+            LOG("---socket created ipv6 %s %d %d\n",ip,port,m_sock);
             
             bzero(&svraddr_6, sizeof(svraddr_6));
             svraddr_6.sin6_family = AF_INET6;
@@ -731,10 +739,12 @@ bool SConnect(const char* domain, unsigned short port)
             if ( inet_pton(AF_INET6, ip, &svraddr_6.sin6_addr) < 0 )
             {
                 perror(ip);
-                LOG("inet_pton FAIL !!");
+                LOG("---inet_pton FAIL !!");
                 ret = false;
                 break;
             }
+            LOG("---inet_pton OK  !!");
+
             svraddr_len = sizeof(svraddr_6);
             svraddr = &svraddr_6;
             break;
@@ -759,7 +769,17 @@ bool SConnect(const char* domain, unsigned short port)
     UdpBindLocal(m_sock);
     char * msg = "thechinaOne";
     printf("----send ---%s \n",msg);
-    UdpSend(m_sock,msg,sizeof(msg),svraddr, sizeof(svraddr));
+  
+    //  UdpSend(m_sock,msg,strlen(msg),svraddr, sizeof(svraddr));
+    printf("---sendto %s len %d \n",msg,strlen(msg));
+    int numbytes;
+    if( (numbytes = sendto(m_sock, msg, strlen(msg), 0,(struct sockaddr*)svraddr, svraddr_len)
+        ) == -1) {
+        perror("talker: sendto");
+        exit(1);
+    }
+       LOG("sendto ok %d \n",numbytes);
+    
     return true;
 }
 
@@ -870,12 +890,17 @@ int talker(char *host,char * msg)
     
     // loop through all the results and make a socket
     for(p = servinfo; p != NULL; p = p->ai_next) {
+        if(p->ai_family == AF_INET6 ){
+            LOG("V6 \n");
+        }else{
+            LOG("v4 \n");
+        }
         if ((sockfd = socket(p->ai_family, p->ai_socktype,
                              p->ai_protocol)) == -1) {
             perror("talker: socket");
             continue;
         }
-        
+        /* 去到第一个ip就break出来啊*/
         break;
     }
     

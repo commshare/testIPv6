@@ -9,6 +9,11 @@
 #ifndef ipv4_ipv6_interface_h
 #define ipv4_ipv6_interface_h
 
+
+#define CLI_TCP 1
+#define CLI_UDP 2
+
+
 #ifdef WIN32
 #include <WinSock2.h>
 #include <WS2tcpip.h>
@@ -87,6 +92,9 @@ void getaddrinfo_behavior_test();
 void exported_test();
 void nat64Sample();
 void showIp(char *hostname);
-bool SConnect(const char* domain, unsigned short port);
+bool SConnect(const char* domain, unsigned short port,int type);
 int talker(char *host,char * msg);
+
+
+
 #endif /* ipv4_ipv6_interface_h */
