@@ -38,7 +38,7 @@ const char* LOCAL_IPV4 = "192.168.2.2";
 const char* LOCAL_IPV6 = "2001:2::aab1:1c2d:6fd3:a33b:499b";
 const int PEER_SERIVCE_PORT = 80;
 
-#define LOG (printf("(%d) - <%s>\n",/*__FILE__,*/__LINE__,__FUNCTION__),printf)
+#define LOG (printf("(%d) - <%s> ",/*__FILE__,*/__LINE__,__FUNCTION__),printf)
 
 //sockaddr得到ip地址
 char * inet_ntop_ipv4_ipv6_compatible(const struct sockaddr *sa, char *s, unsigned int maxlen)
@@ -722,7 +722,7 @@ bool SConnect(const char* domain, unsigned short port)
             inet_ntop(AF_INET6, &(((struct sockaddr_in6 *)sa)->sin6_addr),
                       ip, maxlen);
             
-            printf("socket created ipv6 %s\n",ip);
+            printf("socket created ipv6 %s %d %d\n",ip,port,m_sock);
             
             bzero(&svraddr_6, sizeof(svraddr_6));
             svraddr_6.sin6_family = AF_INET6;
@@ -731,6 +731,7 @@ bool SConnect(const char* domain, unsigned short port)
             if ( inet_pton(AF_INET6, ip, &svraddr_6.sin6_addr) < 0 )
             {
                 perror(ip);
+                LOG("inet_pton FAIL !!");
                 ret = false;
                 break;
             }
@@ -843,4 +844,56 @@ void nat64Sample(){
     getpeername(v6_sock, (sockaddr*)&v6_local_addr, &v6_local_addr_len);
     inet_ntop(v6_local_addr.sin6_family, &v6_local_addr.sin6_addr, v6_str_local_addr, 64);
     LOG("local ip %s \n",v6_str_local_addr);  //!!!! 没有输出啊,字符 array数组是这么打印么？
-    close(v6_sock);}
+    close(v6_sock);
+    
+}
+
+
+#define SERVERPORT "4950" // the port users will be connecting to
+
+int talker(char *host,char * msg)
+{
+    int sockfd;
+    struct addrinfo hints, *servinfo, *p;
+    int rv;
+    int numbytes;
+    
+    
+    memset(&hints, 0, sizeof hints);
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_DGRAM; //udp的哦
+    
+    if ((rv = getaddrinfo(host, SERVERPORT, &hints, &servinfo)) != 0) {
+        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
+        return 1;
+    }
+    
+    // loop through all the results and make a socket
+    for(p = servinfo; p != NULL; p = p->ai_next) {
+        if ((sockfd = socket(p->ai_family, p->ai_socktype,
+                             p->ai_protocol)) == -1) {
+            perror("talker: socket");
+            continue;
+        }
+        
+        break;
+    }
+    
+    if (p == NULL) {
+        fprintf(stderr, "talker: failed to create socket\n");
+        return 2;
+    }
+    printf("---sendto %s len %d \n",msg,strlen(msg));
+    if ((numbytes = sendto(sockfd, msg, strlen(msg), 0,
+                           p->ai_addr, p->ai_addrlen)) == -1) {
+        perror("talker: sendto");
+        exit(1);
+    }
+    
+    freeaddrinfo(servinfo);
+    
+    printf("talker: sent %d bytes to %s\n", numbytes, host);
+    close(sockfd);
+    
+    return 0;
+}

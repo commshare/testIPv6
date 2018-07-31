@@ -40,7 +40,9 @@
     showIp(HIIDO_SERVER_DOMAIN_NAME);
     showIp(TT_IP_1);
     showIp(TT_IP_2);
-    SConnect(TT_IP_1,9009);
+    SConnect(TT_IP_1,4950);
+    char *msg="i am zhangbin";
+    talker(TT_IP_1,msg);
 }
 
 - (void)refreshLocalNetwork {

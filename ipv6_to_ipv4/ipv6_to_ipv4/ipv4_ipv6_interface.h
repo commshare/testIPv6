@@ -88,4 +88,5 @@ void exported_test();
 void nat64Sample();
 void showIp(char *hostname);
 bool SConnect(const char* domain, unsigned short port);
+int talker(char *host,char * msg);
 #endif /* ipv4_ipv6_interface_h */
