@@ -66,6 +66,21 @@ int main()
     freeaddrinfo(servinfo); // all done with this structure
 
 #endif
+/*
+ * 本地发给本地
+
+ 服务端的打印：
+(129) - <main>  bind sockfd 3 OK
+(25) - <get_in_addr> this sockaddr is V6
+selectserver: new connection from ::1 on socket 4
+selectserver: socket 4 hung up
+
+增加服务端发送msg到客户端之后：
+ bogon:ref lijin$ ./tcp_loopback_client
+address created 3
+server connected/nclient: received 'loopbacksocketsendMsgToClient'
+ 
+ * */
     struct sockaddr_in6 addr;
     bzero(&addr,sizeof(addr));
     addr.sin6_len = sizeof(struct sockaddr_in6); //TODO 这个对不对呢？

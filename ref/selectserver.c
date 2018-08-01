@@ -176,6 +176,9 @@ if(connect(s, (struct sockaddr *)&sin6, sizeof(sin6)) == -1)
 								get_in_addr((struct sockaddr*)&remoteaddr),
 								remoteIP, INET6_ADDRSTRLEN),
 							newfd);
+                        char * msg =  "loopbacksocketsendMsgToClient";
+                       int rs =  send(newfd,msg,strlen(msg),0);
+                       LOG("SEND CLIENT  %d \n",rs);
                     }
                 } else {
                     // handle data from a client
