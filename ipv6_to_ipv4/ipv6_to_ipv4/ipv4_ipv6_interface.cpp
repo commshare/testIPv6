@@ -988,7 +988,7 @@ int tcpclient_main(char * host)
     printf("client: connecting to %s\n", s);
     
     freeaddrinfo(servinfo); // all done with this structure
-    
+    //这是一个租塞操作
     if ((numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1) {
         perror("recv");
         exit(1);
@@ -1002,4 +1002,94 @@ int tcpclient_main(char * host)
     
     return 0;
 }
+
+int tcpclient_loopback()
+{
+    int sockfd, numbytes;
+    char buf[MAXDATASIZE];
+    struct addrinfo hints, *servinfo, *p;
+    int rv;
+    char s[INET6_ADDRSTRLEN];
+    
+#if 0
+    
+    memset(&hints, 0, sizeof hints);
+    hints.ai_family = AF_UNSPEC; //这里如果没有强制的话，可能会是ipv4的哦
+    hints.ai_socktype = SOCK_STREAM;
+    
+    if ((rv = getaddrinfo(host,TCP_SERVER_PORT, &hints, &servinfo)) != 0) {
+        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
+        return 1;
+    }
+    
+    // loop through all the results and connect to the first we can 连接到第一个
+    for(p = servinfo; p != NULL; p = p->ai_next) {
+        if(p->ai_family == AF_INET6){
+            LOG("--V6 \n");
+        }else{
+            LOG("--V4 \n");
+        }
+        if ((sockfd = socket(p->ai_family, p->ai_socktype,
+                             p->ai_protocol)) == -1) {
+            perror("client: socket fail ");
+            continue;
+        }
+        
+        if (connect(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
+            perror("client: connect fail");
+            close(sockfd);
+            continue;
+        }
+        
+        break;
+    }
+    
+    if (p == NULL) {
+        fprintf(stderr, "client: failed to connect\n");
+        return 2;
+    }
+    
+    inet_ntop(p->ai_family, get_in_addr((struct sockaddr *)p->ai_addr),
+              s, sizeof s);
+    printf("client: connecting to %s\n", s);
+    
+    freeaddrinfo(servinfo); // all done with this structure
+
+#endif
+    struct sockaddr_in6 addr;
+    bzero(&addr,sizeof(addr));
+    addr.sin6_len = sizeof(sockaddr_in6); //TODO 这个对不对呢？
+    addr.sin6_family = AF_INET6;
+    char *port = "9024";
+    addr.sin6_port = htons(atoi(port));
+    addr.sin6_addr = in6addr_loopback;
+    sockfd = socket(PF_INET6,SOCK_STREAM,IPPROTO_TCP);
+    if(sockfd < 0 ){
+        LOG("SOCKET FAIL %d  %s \n",sockfd,strerror(errno));
+    }
+    printf("address created %d \n",sockfd);
+
+    /*
+     int    connect(int, const struct sockaddr *, socklen_t) __DARWIN_ALIAS_C(connect);
+     */
+    int ret = connect(sockfd,(struct sockaddr *)&addr,sizeof(sockaddr_in6));
+    if(ret  != 0 ){
+        LOG(" CONNCET FAIL %d %s \n",ret,strerror(errno));
+    }
+    printf("server connected/n");
+
+    if ((numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1) {
+        perror("recv");
+        exit(1);
+    }
+    
+    buf[numbytes] = '\0';
+    
+    printf("client: received '%s'\n",buf);
+    
+    close(sockfd);
+    
+    return 0;
+}
+
 

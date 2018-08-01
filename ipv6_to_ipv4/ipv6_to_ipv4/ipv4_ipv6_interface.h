@@ -96,5 +96,5 @@ bool SConnect(const char* domain, unsigned short port,int type);
 int talker(char *host,char * msg);
 
 int tcpclient_main(char * host);
-
+int tcpclient_loopback();
 #endif /* ipv4_ipv6_interface_h */
