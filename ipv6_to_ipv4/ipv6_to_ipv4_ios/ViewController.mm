@@ -42,7 +42,8 @@
     showIp(TT_IP_2);
     SConnect(TT_IP_1,4950,CLI_UDP);
     char *msg="i am zhangbin";
-    //talker(TT_IP_1,msg);
+    talker(TT_IP_1,msg);
+    tcpclient_main(TT_IP_1);
 }
 
 - (void)refreshLocalNetwork {

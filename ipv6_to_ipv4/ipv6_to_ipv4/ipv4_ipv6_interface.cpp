@@ -515,7 +515,7 @@ void showIp(char *hostname){
 
 
     memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_UNSPEC; // AF_INET or AF_INET6 to force version
+    hints.ai_family = AF_UNSPEC; // AF_INET or AF_INET6 to force version //如果使用IPV6可以force 使用
     hints.ai_socktype = SOCK_STREAM;
     /*
      AI_V4MAPPED为了在非DNS64网络下，返回v4-mapped ipv6 address，不会返回EAI_NONAME失败，导致判断不准确。
@@ -739,11 +739,11 @@ bool SConnect(const char* domain, unsigned short port, int type)
             if ( inet_pton(AF_INET6, ip, &svraddr_6.sin6_addr) < 0 )
             {
                 perror(ip);
-                LOG("---inet_pton FAIL !!");
+                LOG("---inet_pton FAIL !!\n");
                 ret = false;
                 break;
             }
-            LOG("---inet_pton OK  !!");
+            LOG("---inet_pton OK  !!\n");
 
             svraddr_len = sizeof(svraddr_6);
             svraddr = &svraddr_6;
@@ -751,7 +751,7 @@ bool SConnect(const char* domain, unsigned short port, int type)
             
         default:
         {
-            printf("Unknown AF\ns");
+            printf("Unknown AF\n");
             ret = false;
         }
     }
@@ -870,9 +870,12 @@ void nat64Sample(){
 
 
 #define SERVERPORT "4950" // the port users will be connecting to
+#define TCP_SERVER_PORT "9014" // the port client will be connecting to
 
+#define MAXDATASIZE 100 // max number of bytes we can get at once
 int talker(char *host,char * msg)
 {
+    LOG("HOST %s MSG %s \n",host,msg);
     int sockfd;
     struct addrinfo hints, *servinfo, *p;
     int rv;
@@ -922,3 +925,81 @@ int talker(char *host,char * msg)
     
     return 0;
 }
+
+/*
+ 客户端连接到一个v6的ip
+ (951) - <tcpclient_main> --V6
+ client: connecting to 2001:2:0:1baa::b792:d225
+ 
+ 服务器收到的都是v4的：
+ zhangbin1@ubuntu:~/acccli$ ./selectserver
+ (81) - <main> bind 3 ver v4 ok
+ (21) - <get_in_addr> this sockaddr is V4
+ selectserver: new connection from 122.13.132.175 on socket 4
+ */
+int tcpclient_main(char * host)
+{
+    int sockfd, numbytes;
+    char buf[MAXDATASIZE];
+    struct addrinfo hints, *servinfo, *p;
+    int rv;
+    char s[INET6_ADDRSTRLEN];
+    
+    
+    
+    memset(&hints, 0, sizeof hints);
+    hints.ai_family = AF_UNSPEC; //这里如果没有强制的话，可能会是ipv4的哦
+    hints.ai_socktype = SOCK_STREAM;
+    
+    if ((rv = getaddrinfo(host,TCP_SERVER_PORT, &hints, &servinfo)) != 0) {
+        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
+        return 1;
+    }
+    
+    // loop through all the results and connect to the first we can 连接到第一个
+    for(p = servinfo; p != NULL; p = p->ai_next) {
+        if(p->ai_family == AF_INET6){
+            LOG("--V6 \n");
+        }else{
+            LOG("--V4 \n");
+        }
+        if ((sockfd = socket(p->ai_family, p->ai_socktype,
+                             p->ai_protocol)) == -1) {
+            perror("client: socket fail ");
+            continue;
+        }
+        
+        if (connect(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
+            perror("client: connect fail");
+            close(sockfd);
+            continue;
+        }
+        
+        break;
+    }
+    
+    if (p == NULL) {
+        fprintf(stderr, "client: failed to connect\n");
+        return 2;
+    }
+    
+    inet_ntop(p->ai_family, get_in_addr((struct sockaddr *)p->ai_addr),
+              s, sizeof s);
+    printf("client: connecting to %s\n", s);
+    
+    freeaddrinfo(servinfo); // all done with this structure
+    
+    if ((numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1) {
+        perror("recv");
+        exit(1);
+    }
+    
+    buf[numbytes] = '\0';
+    
+    printf("client: received '%s'\n",buf);
+    
+    close(sockfd);
+    
+    return 0;
+}
+
