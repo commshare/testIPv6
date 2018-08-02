@@ -97,4 +97,5 @@ int talker(char *host,char * msg);
 
 int tcpclient_main(char * host);
 int tcpclient_loopback();
+void getAddrinfo_Main(const char* domain, unsigned short port, int type);
 #endif /* ipv4_ipv6_interface_h */

@@ -67,7 +67,7 @@ int main()
 
 #endif
 /*
- * 本地发给本地
+ * 本地发给本地(macos , 服务器和客户端都强制用v6)
 
  服务端的打印：
 (129) - <main>  bind sockfd 3 OK
@@ -79,7 +79,7 @@ selectserver: socket 4 hung up
  bogon:ref lijin$ ./tcp_loopback_client
 address created 3
 server connected/nclient: received 'loopbacksocketsendMsgToClient'
- 
+
  * */
     struct sockaddr_in6 addr;
     bzero(&addr,sizeof(addr));

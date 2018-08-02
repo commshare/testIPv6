@@ -43,8 +43,23 @@
     SConnect(TT_IP_1,4950,CLI_UDP);
     char *msg="i am zhangbin";
     talker(TT_IP_1,msg);
-  //  tcpclient_main(TT_IP_1);
-    tcpclient_loopback();
+    tcpclient_main(TT_IP_1);
+  //  tcpclient_loopback();
+    const char* ipv6_str ="64:ff9b::14.17.32.211"; //后面是点分十进制的
+    /*
+     14.17.32.211 变为
+     0:0:0:0:0:ffff:e11:20d3
+     */
+    /*
+     (1147) - <getAddrinfo_Main> ---create ipv6 socket 64:ff9b::14.17.32.211 mode 2
+     (1158) - <getAddrinfo_Main> ---socket created ipv6 64:ff9b::e11:20d3 9887 7
+     (1171) - <getAddrinfo_Main> ---inet_pton OK  v6 ip 64:ff9b::e11:20d3!!
+     (1147) - <getAddrinfo_Main> ---create ipv6 socket 64:ff9b::14.17.32.211 mode 1
+     (1158) - <getAddrinfo_Main> ---socket created ipv6 64:ff9b::e11:20d3 9887 8
+     (1171) - <getAddrinfo_Main> ---inet_pton OK  v6 ip 64:ff9b::e11:20d3!
+     */
+    getAddrinfo_Main(ipv6_str,9887,CLI_UDP);
+    getAddrinfo_Main(ipv6_str,9887,CLI_TCP);
 }
 
 - (void)refreshLocalNetwork {
