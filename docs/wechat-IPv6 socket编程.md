@@ -38,7 +38,12 @@ IPv6转换机制有很多种，苹果期望iOS app能兼容NAT64/DNS64的方式�
 在这样的情况下我们虽然用的是v6的socket，但是必须要让socket走的是v4的协议。
 这里，让我们先了解下IPv6的保留地址（类似IPv4，192.168.*.*, 127.*.*.*这种）这里假设读者已经对IPv6地址组成和书写方式有一定了解的了解。
 
->  ::ffff:0:0/96 — This prefix is designated as an IPv4-mapped IPv6 address. With a few exceptions, this address type allows the transparent use of the Transport Layer protocols over IPv4 through the IPv6 networking application programming interface. Server applications only need to open a single listening socket to handle connections from clients using IPv6 or IPv4 protocols. IPv6 clients will be handled natively by default, and IPv4 clients appear as IPv6 clients at their IPv4-mapped IPv6 address. Transmission is handled similarly; established sockets may be used to transmit IPv4 or IPv6 datagram, based on the binding to an IPv6 address, or an IPv4-mapped address. (See also Transition mechanisms.) [^1]
+>  ::ffff:0:0/96 — This prefix is designated as an IPv4-mapped IPv6 address. With a few exceptions,
+this address type allows the transparent use of the Transport Layer protocols over IPv4 through the IPv6 networking application programming interface.
+Server applications only need to open a single listening socket to handle connections from clients using IPv6 or IPv4 protocols.
+IPv6 clients will be handled natively by default, and IPv4 clients appear as IPv6 clients at their IPv4-mapped IPv6 address.
+Transmission is handled similarly; established sockets may be used to transmit IPv4 or IPv6 datagram, based on the binding to an IPv6 address,
+or an IPv4-mapped address. (See also Transition mechanisms.) [^1]
 
 从上文可以看到如果服务器地址为`128.0.0.128`，我们转换成IPv4-mapped IPv6 address`::ffff:128.0.0.128`或者纯16进制`::ffff：ff00：00ff`, 然后赋值给`sockaddr_in6.sin6_addr = "::ffff:128.0.0.128";`（注意这里是伪代码，真正代码还要用inet_pton进行转换）。这个socket虽然用了IPv6的`sockaddr_in6`，但实际上走的是IPv4 stack。</br></br>
 

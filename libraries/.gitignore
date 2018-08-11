@@ -1,0 +1,25 @@
+# common
+bin/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+lib/
+tags
+*.pyc
+*.so
+
+# linux/Make
+Makefile
+
+# osx/xcode
+build/
+CMakeScripts/
+mlab.build/
+mlab.xcodeproj/
+test/CMakeScripts/
+test/mlab.build/
+third_party/gtest-1.6.0/CMakeScripts/
+third_party/gtest-1.6.0/gtest.xcodeproj/
+third_party/gtest-1.6.0/mlab.build/
+
+swig/*_wrap.cxx
