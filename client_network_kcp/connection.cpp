@@ -7,10 +7,11 @@ int LastErrorNo()
 #if AURORA_OS_WINDOWS == aurora_OS
     return WSAGetLastError();
 #else
-    //TODO: ��ƽ̨����
+    //TODO: 跨平台处理
     return errno;
 #endif
 }
+//地址协议族
 EnmAddressFamily Address::addressFamily() const
 {
     return (EnmAddressFamily)name()->sa_family;
@@ -40,7 +41,7 @@ std::string Address::toString() const
 {
     std::string host = toAddrString();
     std::string port = toPortString();
-    // TODO joewan
+    // TODO joewan ,v6的地址是带冒号的，所以用【】
     if (host.find(':') >= 0)
     {
         return "[" + host + "]:" + port;
@@ -173,6 +174,7 @@ void InternetAddress::updateAddressAndPort(Address* addr)
     if (m_bIPv6)
     {
         sockaddr_in6* pstTargetAddIn = (sockaddr_in6*)addr->name();
+        //人家更新的就是一个指针啊 TODO
         _updateAddressAndPort(*pstTargetAddIn);
     }
     else
@@ -226,7 +228,7 @@ socklen_t InternetAddress::nameLen() const
         return (socklen_t) sizeof(m_stSockAddrIn);
     }
 }
-/// Returns the IPv4 _port number (in host byte order).
+/// Returns the IPv4 _port number (in host byte order 网络字节序的).
 uint16_t InternetAddress::port() const
 {
     return ntohs(m_stSockAddrIn.sin_port);
@@ -244,7 +246,7 @@ std::string InternetAddress::toAddrString() const
 /// Human readable std::string representing the IPv4 port.
 std::string InternetAddress::toPortString() const
 {
-    char szPortStr[32] = { 0 };
+    char szPortStr[32] = { 0 }; //ipv4的端口也用32个字节 TODO
     snprintf(szPortStr, sizeof(szPortStr) - 1, "%d", port());
 
     return std::string(szPortStr);
@@ -509,7 +511,7 @@ bool Socket::IsAlive() const
     int iCode = getsockopt(m_iSocketID, SOL_SOCKET, SO_ERROR, (char*)&type, &typesize);
     return (iCode == 0);
 }
-/// Associate a local address with this socket.
+/// Associate a local address with this socket. TODO 为啥叫做本地地址啊？
 int Socket::Bind(const Address& stSocketAddress)
 {
     return ::bind(m_iSocketID, stSocketAddress.name(), stSocketAddress.nameLen());
@@ -577,7 +579,7 @@ std::string Socket::GetHostName()
     return std::string(szResult);
 }
 
-int32_t Socket::GetRemoteAddress(const sockaddr_in& stSockAddrIn)
+int32_t Socket::GetRemoteAddress(const sockaddr_in& stSockAddrIn) //远程地址，一定是v4的么?TODO
 {
     socklen_t socklen = sizeof(stSockAddrIn);
 

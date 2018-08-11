@@ -159,16 +159,17 @@ struct AddressInfo
     EnmAddressFamily family;   /// Address _family
     EnmSocketType type;        /// Socket _type
     EnmProtocolType protocol;  /// Protocol
-    sockaddr_in address;        /// Socket _address
+    sockaddr_in address;        /// Socket _address 这个只支持ipv4啊
     //string canonicalName;   /// Canonical name, when $(D AddressInfoFlags.CANONNAME) is used.
 };
 class Address
 {
 public:
+    //更新地址和端口
     virtual void updateAddressAndPort(const std::string& szAddrStr, uint16_t iPort) = 0;
     virtual void updateAddressAndPort(Address* addr) = 0;
     virtual bool isValid() { return false; }
-    virtual bool isIPv6() const { return false; }
+    virtual bool isIPv6() const { return false; } //默认不支持V6么？
     /// Returns pointer to underlying $(D sockaddr) structure.
     virtual sockaddr* name() = 0;
     virtual const sockaddr* name() const = 0;
@@ -183,7 +184,7 @@ public:
     std::string toString() const;
 protected:
     virtual void _updateAddressAndPort(const sockaddr_in& stSockaddrIn) = 0;
-    virtual void _updateAddressAndPort(const sockaddr_in6& stSockaddrIn6) = 0;
+    virtual void _updateAddressAndPort(const sockaddr_in6& stSockaddrIn6) = 0; //看起来是支持v6的啊，需要子类实现
 
 private:
     std::string toHostString(bool numeric) const;
@@ -211,13 +212,13 @@ public:
     std::string toHostNameString() const;
 
     static uint32_t parse(char* addr);
-    static std::string addrToString(uint32_t addr);
+    static std::string addrToString(uint32_t addr); //这个是给IPV4用的吧
 protected:
     virtual void _updateAddressAndPort(const sockaddr_in& stSockaddrIn);
     virtual void _updateAddressAndPort(const sockaddr_in6& stSockaddrIn6);
 protected:
-    sockaddr_in m_stSockAddrIn;
-    sockaddr_in6 m_stSockAddrIn6;
+    sockaddr_in m_stSockAddrIn;  //TODO 都不是指针啊
+    sockaddr_in6 m_stSockAddrIn6; //v6的地址
     bool m_bValid;
     bool m_bIPv6;
 };

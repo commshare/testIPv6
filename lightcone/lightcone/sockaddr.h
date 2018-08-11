@@ -10,7 +10,7 @@
 namespace lightcone {
 // -----------------------------------------------------------
 //! Wrapper for sockaddr
-class SockAddr {
+class   SockAddr {
 friend class Socket;
 friend class Udp;
  public:

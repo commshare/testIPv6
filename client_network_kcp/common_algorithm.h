@@ -5,7 +5,7 @@
 namespace NetWork
 {
 //////////////////////////////////////////////////////////
-//// »·ĞÎ¶ÓÁĞ
+//// ç¯å½¢é˜Ÿåˆ—
 //////////////////////////////////////////////////////////
 class AurCodeRoundRobinQueue
 {
@@ -31,8 +31,8 @@ public:
     {
         return (int32_t)((m_iWritePosFlag - m_iReadPosFlag + m_iDataBufferLen) % (m_iDataBufferLen));
     }
-    //¸øÉÏ²ãÓÃÀ´´Ó»º³å¶ÓÁĞÀï¶ÁÈ¡Ò»¸öÍêÕûÊı¾İ°ü¸øÉÏ²ã´¦Àí
-    int32_t GetOneCode(char* szDataCodeBuffer, const int32_t iDataCodeBufferLen)  //È¥µôref ÒòÎªchar[]±¾Éí¾ÍÊÇÒıÓÃ´«µİ
+    //ç»™ä¸Šå±‚ç”¨æ¥ä»ç¼“å†²é˜Ÿåˆ—é‡Œè¯»å–ä¸€ä¸ªå®Œæ•´æ•°æ®åŒ…ç»™ä¸Šå±‚å¤„ç†
+    int32_t GetOneCode(char* szDataCodeBuffer, const int32_t iDataCodeBufferLen)  //å»æ‰ref å› ä¸ºchar[]æœ¬èº«å°±æ˜¯å¼•ç”¨ä¼ é€’
     {
         uint32_t uiUsedBufferSize = GetUsedBufferSize();
         if (uiUsedBufferSize < 4)
@@ -80,8 +80,8 @@ public:
 
         return 0;
     }
-    //¸øÉÏ²ãÓÃÀ´Ò»´ÎĞÔĞ´ÈëÒ»¸öÍêÕû°üÊı¾İµÄ¡£
-    int32_t WriteOneCode(char* szDataCodeBuffer, const int32_t iDataCodeBufferLen)  //È¥µôref ÒòÎªchar[]±¾Éí¾ÍÊÇÒıÓÃ´«µİ
+    //ç»™ä¸Šå±‚ç”¨æ¥ä¸€æ¬¡æ€§å†™å…¥ä¸€ä¸ªå®Œæ•´åŒ…æ•°æ®çš„ã€‚
+    int32_t WriteOneCode(char* szDataCodeBuffer, const int32_t iDataCodeBufferLen)  //å»æ‰ref å› ä¸ºchar[]æœ¬èº«å°±æ˜¯å¼•ç”¨ä¼ é€’
     {
         if (iDataCodeBufferLen <= 4)
         {
@@ -120,8 +120,8 @@ public:
 
         return uiCodeLength;
     }
-    //¸øµ×²ãsocket·¢ËÍÊı¾İÊ±Ê¹ÓÃ
-    int32_t CopyDataFromBuffer(char* szDataCodeBuffer, const int32_t iDataCodeBufferLen) //È¥µôref ÒòÎª±¾Éí¾ÍÊÇÒıÓÃ´«µİ
+    //ç»™åº•å±‚socketå‘é€æ•°æ®æ—¶ä½¿ç”¨
+    int32_t CopyDataFromBuffer(char* szDataCodeBuffer, const int32_t iDataCodeBufferLen) //å»æ‰ref å› ä¸ºæœ¬èº«å°±æ˜¯å¼•ç”¨ä¼ é€’
     {
         int32_t iCopyDataLen = GetUsedBufferSize();
         if (iDataCodeBufferLen < iCopyDataLen)
@@ -143,7 +143,7 @@ public:
 
         return iCopyDataLen;
     }
-    //¸øµ×²ãsocket·¢ËÍÊı¾İÊ±Ê¹ÓÃ ·¢ËÍ³É¹¦µÄÊıÁ¿
+    //ç»™åº•å±‚socketå‘é€æ•°æ®æ—¶ä½¿ç”¨ å‘é€æˆåŠŸçš„æ•°é‡
     int32_t RemoveDataFromBuffer(int32_t iDataSize)
     {
         if (iDataSize >= 0 && iDataSize <= GetUsedBufferSize())
@@ -155,8 +155,8 @@ public:
 
         return -1;
     }
-    //¸øµ×²ãsocket½ÓÊÕÊı¾İÊ±Ê¹ÓÃ Ğ´Èë½ÓÊÕµÄÊıÁ¿
-    int32_t WriteDataToBuffer(const char* szDataCodeBuffer, const int32_t iDataCodeBufferLen)  //È¥µôref ÒòÎª±¾Éí¾ÍÊÇÒıÓÃ´«µİ
+    //ç»™åº•å±‚socketæ¥æ”¶æ•°æ®æ—¶ä½¿ç”¨ å†™å…¥æ¥æ”¶çš„æ•°é‡
+    int32_t WriteDataToBuffer(const char* szDataCodeBuffer, const int32_t iDataCodeBufferLen)  //å»æ‰ref å› ä¸ºæœ¬èº«å°±æ˜¯å¼•ç”¨ä¼ é€’
     {
         uint32_t uiFreeBufferSize = GetFreeBufferSize();
         if ((int32_t)uiFreeBufferSize < iDataCodeBufferLen || iDataCodeBufferLen <= 0)

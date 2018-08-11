@@ -45,9 +45,11 @@ IPv6 clients will be handled natively by default, and IPv4 clients appear as IPv
 Transmission is handled similarly; established sockets may be used to transmit IPv4 or IPv6 datagram, based on the binding to an IPv6 address,
 or an IPv4-mapped address. (See also Transition mechanisms.) [^1]
 
-从上文可以看到如果服务器地址为`128.0.0.128`，我们转换成IPv4-mapped IPv6 address`::ffff:128.0.0.128`或者纯16进制`::ffff：ff00：00ff`, 然后赋值给`sockaddr_in6.sin6_addr = "::ffff:128.0.0.128";`（注意这里是伪代码，真正代码还要用inet_pton进行转换）。这个socket虽然用了IPv6的`sockaddr_in6`，但实际上走的是IPv4 stack。</br></br>
+从上文可以看到如果服务器地址为`128.0.0.128`，我们转换成IPv4-mapped IPv6 address`::ffff:128.0.0.128`或者纯16进制`::ffff：ff00：00ff`,
+然后赋值给`sockaddr_in6.sin6_addr = "::ffff:128.0.0.128";`（注意这里是伪代码，真正代码还要用inet_pton进行转换）。
+这个socket虽然用了IPv6的`sockaddr_in6`，但实际上走的是IPv4 stack。</br></br>
 
-IPv4-mapped IPv6 address是让用户能够使用一致的socket api，来访问IPv4和IPv6网络。
+# IPv4-mapped IPv6 address是让用户能够使用一致的socket api，来访问IPv4和IPv6网络。
 
 上文提及[RFC 4038 - Application Aspects of IPv6 Transition](https://www.ietf.org/rfc/rfc4038)对这种情况进行说明。
 

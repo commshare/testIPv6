@@ -98,7 +98,7 @@ public:
 
     void SetSignature(char *signature, int16_t signature_len);
     void SetUin(int32_t uin) { m_uin = uin; }
-    char m_sz_session_key[XTEA_KEY_LENGTH]; //ǩ��
+    char m_sz_session_key[XTEA_KEY_LENGTH]; //ǩ��
     char m_kcp_key[KCP_KEY_LENGTH + 2];
 private:
     bool CheckKcpKye(const char *buf, int32_t buf_len);
@@ -139,7 +139,7 @@ private:
     IUINT64 m_last_notify_kcp_full_time;
     IUINT32 m_last_active_time;
     int32_t m_conv;
-    ikcpcb *m_kcp;
+    ikcpcb *m_kcp; //又是一个支持KCP的
     KCP_STATUS m_kcp_status;
     TRANSPORT_USE_PROTOCOL m_transport_use_protocol;
     CONNECT_STATUS m_connect_status;
