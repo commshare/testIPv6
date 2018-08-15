@@ -1,0 +1,1 @@
+- eine Art Fehler-Stack implementerien, d.h. es gibt eine liste von strings o.Ä. (basierend auf std::queue auf Basis einer std::list) auf die die Fehler gelegt werden
